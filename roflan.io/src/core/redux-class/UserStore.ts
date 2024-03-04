@@ -6,8 +6,7 @@ import {
   ReduxFactory,
   ReduxMethod, ReduxThunk,
 } from '@core/redux-class/BaseReduxWrapper.ts';
-import { PayloadAction, configureStore } from '@reduxjs/toolkit';
-import {actions2, store} from "@core/redux-class/index.ts";
+import { PayloadAction } from '@reduxjs/toolkit';
 
 @ReduxFactory('user')
 export class UserStore extends BaseReduxWrapper {

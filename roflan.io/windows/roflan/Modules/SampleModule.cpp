@@ -7,10 +7,14 @@
 #include <winrt/Windows.Storage.Streams.h>
 #include <winrt/Windows.Storage.h>
 #include <winrt/Windows.ApplicationModel.h>
+#include <winrt/Windows.Data.Xml.Dom.h>
+#include <winrt/Windows.UI.Notifications.h>
 
 using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::Storage::Streams;
 using namespace winrt::Windows::ApplicationModel;
+using namespace winrt::Windows::Data::Xml::Dom;
+using namespace winrt::Windows::UI::Notifications;
 
 class SampleModuleDecl final {
   public:
@@ -27,6 +31,25 @@ std::string SampleModuleDecl::GetString() {
   // Generate a random integer between 0 and 100
   int randomInt = std::rand() % 101;
   return std::to_string(randomInt);
+}
+
+void showToastNotification(const std::wstring& title, const std::wstring& content) {
+   
+
+    std::wstring xml = L"<toast>"
+        L"    <visual>"
+        L"        <binding template=\"ToastGeneric\">"
+        L"            <text>" + title + L"</text>"
+        L"            <text>" + content + L"</text>"
+        L"        </binding>"
+        L"    </visual>"
+        L"</toast>";
+
+    XmlDocument doc;
+    doc.LoadXml(xml);
+    ToastNotification toast(doc);
+    ToastNotifier notifier = ToastNotificationManager::CreateToastNotifier();
+    notifier.Show(toast);
 }
 
 

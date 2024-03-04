@@ -14,7 +14,7 @@
   "codegenConfig": {
     "name": "roflan",
     "type": "modules",
-    "jsSrcsDir": "src/tm",
+    "jsSrcsDir": "./src/tm",
     "windows": {
       "namespace": "NativeMud",
       "cppStringType": "std::string",

@@ -4,6 +4,8 @@
 
 using namespace winrt::Microsoft::ReactNative;
 
+#include "Modules/SampleModule.h"
+
 namespace winrt::roflan::implementation
 {
 

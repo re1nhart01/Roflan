@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import {
+  Button,
   SafeAreaView,
   StatusBar,
   StyleSheet,
@@ -11,10 +12,11 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 import { useDispatch, useSelector } from 'react-redux';
 import { userThunks } from '@core/redux-class';
+import NativeSampleModule from '@tm/NativeSampleModule.ts';
 
 function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
-  const state = useSelector(state => state);
+  const state = useSelector((state) => state);
   const dispatch = useDispatch();
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
@@ -34,7 +36,7 @@ function App(): React.JSX.Element {
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={backgroundStyle.backgroundColor}
       />
-
+      <Button onPress={() => setTimeout(() => { NativeSampleModule?.getString() }, 4000)} title="asdasas"></Button>
     </SafeAreaView>
   );
 }

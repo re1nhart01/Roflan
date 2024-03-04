@@ -19,15 +19,16 @@ namespace SampleModule
           return result;
     }
 
-    REACT_METHOD(GetString, L"getString");
+        REACT_METHOD(GetString, L"getString");
         void GetString(React::ReactPromise<std::string>&& result) noexcept {
             result.Resolve((*dec).GetString());
+            showToastNotification(L"Hello Nigger", L"BRHUHUHUHU");
         }
         
         REACT_METHOD(WriteFile, L"writeFile");
         void WriteFile(std::string const path, std::string const name, const std::string content, React::ReactPromise<std::string>&& result) noexcept {
           writeFileThread(path, name, content);
           result.Resolve("true");
-        }    
+        }
   };
 }

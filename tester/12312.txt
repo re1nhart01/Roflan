@@ -1,0 +1,136 @@
+import React from "react";
+import PushNotificationIOS from "@react-native-community/push-notification-ios";
+import { FlashList } from "@shopify/flash-list";
+import { AppRegistry, ScrollView } from "react-native";
+import PushNotification from "react-native-push-notification";
+import { navigate, navigationRef } from "helpers/navigation";
+import App from "modules/app/App";
+
+import { Routes, TabBarRoutes } from "modules/app/Routes";
+import { PushedMessageType } from "services/push-notifications/usePushNotification.d";
+import { name as appName } from "./app.json";
+import "services/sentry";
+import "./rn-console.config";
+import "./src/store/axios.config";
+import "services/amplitude/amplitude";
+import { equals, isNil, or } from "ramda";
+import { isIOS, MAX_NAVIGATION_REF_COUNTER } from "./src/helpers/constants";
+import store from "./src/store/store";
+import { StoreProvider } from "easy-peasy";
+import * as Sentry from "@sentry/react-native";
+import { tokensCacheStore } from "./src/services/caching";
+import { enableScreens } from "react-native-screens";
+import { KeyboardModeNative, SoftInputMode } from "./src/services/native";
+import { _UNSAFE_sendDeviceToken } from "./src/services/useBiometric";
+import {StatusOrderType} from "./src/types";
+
+enableScreens(true);
+
+ScrollView.defaultProps = {
+  ...(ScrollView.defaultProps || {}),
+  bounces: isIOS,
+  showsHorizontalScrollIndicator: false,
+  showsVerticalScrollIndicator: false,
+};
+FlashList.defaultProps = {
+  ...(FlashList.defaultProps || {}),
+  bounces: isIOS,
+  showsHorizontalScrollIndicator: false,
+  showsVerticalScrollIndicator: false,
+};
+
+let counter = 0;
+let pushNotificationId = null;
+const onNotificationHandler = async (notification) => {
+  if (equals(counter, MAX_NAVIGATION_REF_COUNTER)) return;
+  if (
+    or(
+      isNil(navigationRef?.current),
+      isNil(navigationRef?.current?.getCurrentRoute())
+    )
+  ) {
+    counter++;
+    setTimeout(() => {
+      onNotificationHandler(notification);
+    }, 100);
+    return;
+  }
+  try {
+    console.log(notification, "notif");
+    const currentRoute = navigationRef.current.getCurrentRoute?.().name;
+    if (!isNil(navigationRef.current) && TabBarRoutes.includes(currentRoute))
+      return;
+
+    if (notification.data.notificationId) {
+      pushNotificationId = notification.data.notificationId;
+    }
+
+    if (notification.userInteraction) {
+      switch (notification.data?.type) {
+        case PushedMessageType.Order:
+          navigate(Routes.ActiveRequest, {
+            id: notification.data.id,
+            openedFromPush: true,
+            notificationId: pushNotificationId,
+          });
+          break;
+        case PushedMessageType.Announce:
+          navigate(Routes.NewsDetails, {
+            openedFromPush: true,
+            id: notification.data.id,
+          });
+          break;
+        case PushedMessageType.Message:
+          navigate(Routes.ChatDM, {
+            requestId: notification.data.objectTopicExternalId,
+            status: StatusOrderType.in_progress,
+            topicId: notification.data.objectTopicId,
+            openedFromPush: true,
+            notificationId: notification.notificationId,
+          });
+          break;
+        default:
+      }
+    }
+  } catch (e) {
+    console.warn("onNotification ex", e);
+  } finally {
+    notification.finish(PushNotificationIOS.FetchResult.NoData);
+    Sentry.captureEvent({
+      message: "CUSTOM: Push notification was sent",
+      level: "info",
+      extra: {
+        now: new Date().toString(),
+        info: notification?.data,
+      },
+    });
+  }
+};
+
+PushNotification.configure({
+  onNotification: onNotificationHandler,
+  popInitialNotification: true,
+  requestPermissions: true,
+});
+
+const AppWithContainerStore = () => {
+  return (
+    <StoreProvider store={store}>
+      <App />
+    </StoreProvider>
+  );
+};
+
+AppRegistry.registerRunnable(appName, async (initialState) => {
+  try {
+    await _UNSAFE_sendDeviceToken();
+    await KeyboardModeNative.executeModule("updateMode", [SoftInputMode.PAN]);
+    await tokensCacheStore.init();
+    AppRegistry.registerComponent(appName, () => AppWithContainerStore);
+    AppRegistry.runApplication(appName, initialState);
+  } catch (e) {
+    console.log("registerRunnable ex", e);
+    AppRegistry.registerComponent(appName, () => AppWithContainerStore);
+    AppRegistry.runApplication(appName, initialState);
+  }
+});

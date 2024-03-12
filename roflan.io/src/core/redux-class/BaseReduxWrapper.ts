@@ -79,7 +79,6 @@ export function ReduxMethod(target: any, key: string, descriptor: PropertyDescri
   if (target === void 0) {
     throw new Error('this controller is not correct!');
   }
-  console.log(target, key, target[key], descriptor);
   const originalValue = target[key];
   descriptor.value = function (state: any, action: any) {
     console.log('1234');

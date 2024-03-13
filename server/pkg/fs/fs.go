@@ -1,5 +1,7 @@
 package fs
 
-func ReadJSONFile[T comparable](path string) T {
+import "fmt"
 
+func ReadJSONFile[T comparable](path string) {
+	fmt.Println("STUB!")
 }

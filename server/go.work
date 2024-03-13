@@ -1,9 +1,12 @@
-go 1.20
-
-
+go 1.21.6
 
 
 use (
     ./pkg/jwt
     ./internal/env
+	./internal/pg
+	./internal/api
+	./internal/api/base
+	./internal/api/modules
+	.
 )

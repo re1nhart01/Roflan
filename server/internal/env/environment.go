@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 	"path"
 )
@@ -14,34 +14,33 @@ type Environment interface {
 	SetVariable(key, value string) error
 }
 
-var SingletonEnvHandler *EnvironmentHandler
+var SingletonEnvHandler *Handler
 
-type EnvironmentHandler struct {
+type Handler struct {
 	TookVariables map[string]string
 }
 
 func parseFile(relativePath string) (map[string]any, error) {
-	unmarshaledDict := map[string]any{}
+	unmarshalledDict := map[string]any{}
 	cwd, err := os.Getwd()
 	if err != nil {
-		return unmarshaledDict, errors.New("roflan.io error! on parseFile getWd")
+		return unmarshalledDict, errors.New("roflan.io error! on parseFile getWd")
 	}
 	absolutePath := path.Join(path.Dir(cwd), relativePath)
-	fmt.Println(absolutePath)
-	file, err := os.Open(absolutePath)
+	file, err := os.Open("C:\\Users\\eugen\\Documents\\GitHub\\roflan\\server\\internal\\config\\env.json")
 	if err != nil {
-		return unmarshaledDict, errors.New(fmt.Sprintf("roflan.io error! on os.Open, path: %s", absolutePath))
+		return unmarshalledDict, errors.New(fmt.Sprintf("roflan.io error! on os.Open, path: %s", absolutePath))
 	}
 	defer file.Close()
-	byteJson, err := ioutil.ReadAll(file)
+	byteJson, err := io.ReadAll(file)
 	if err != nil {
-		return unmarshaledDict, errors.New(fmt.Sprintf("roflan.io error! on ioutils.ReadAll, path: %s", absolutePath))
+		return unmarshalledDict, errors.New(fmt.Sprintf("roflan.io error! on ioutils.ReadAll, path: %s", absolutePath))
 	}
-	json.Unmarshal(byteJson, &unmarshaledDict)
-	return unmarshaledDict, nil
+	_ = json.Unmarshal(byteJson, &unmarshalledDict)
+	return unmarshalledDict, nil
 }
 
-func (env *EnvironmentHandler) GetVariable(key string) string {
+func (env *Handler) GetVariable(key string) string {
 	if env.TookVariables[key] == "" {
 		return os.Getenv(key)
 	} else {
@@ -49,31 +48,31 @@ func (env *EnvironmentHandler) GetVariable(key string) string {
 	}
 }
 
-func (env *EnvironmentHandler) SetVariable(key, value string) error {
-	os.Setenv(key, value)
+func (env *Handler) SetVariable(key, value string) error {
+	_ = os.Setenv(key, value)
 	env.TookVariables[key] = value
 	return nil
 }
 
 func InitEnvironment(path string) {
-	SingletonEnvHandler = &EnvironmentHandler{
+	SingletonEnvHandler = &Handler{
 		TookVariables: map[string]string{},
 	}
 	dict, _ := parseFile(path)
 
 	for key, value := range dict {
-		stringRepr, isOk := value.(string)
+		stringRepresentation, isOk := value.(string)
 		if isOk {
-			os.Setenv(key, stringRepr)
-			SingletonEnvHandler.TookVariables[key] = stringRepr
+			_ = os.Setenv(key, stringRepresentation)
+			SingletonEnvHandler.TookVariables[key] = stringRepresentation
 		}
 	}
 
 }
 
-func GEnv(withUpdate bool) *EnvironmentHandler {
+func GEnv() *Handler {
 	if SingletonEnvHandler == nil {
-		SingletonEnvHandler = new(EnvironmentHandler)
+		SingletonEnvHandler = new(Handler)
 	}
 	return SingletonEnvHandler
 }

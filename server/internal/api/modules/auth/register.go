@@ -2,7 +2,7 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
-	api "github.com/roflan.io/api/modules/auth/http"
+	"github.com/roflan.io/api/modules/auth/http"
 )
 
 func RegisterHttpAuthRouter(engine *gin.Engine, basePath string) {

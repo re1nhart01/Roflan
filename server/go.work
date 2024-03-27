@@ -8,5 +8,6 @@ use (
 	./internal/api
 	./internal/api/base
 	./internal/api/modules
+	./pkg/helpers
 	.
 )

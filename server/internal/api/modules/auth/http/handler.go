@@ -2,6 +2,7 @@ package api
 
 import (
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"github.com/roflan.io/api/base"
 )
 
@@ -19,6 +20,12 @@ func (auth *AuthHttpHandler) GetPath() string {
 
 func (auth *AuthHttpHandler) GetName() string {
 	return auth.Name
+}
+
+func (auth *AuthHttpHandler) AliveHandler(context *gin.Context) {
+	context.JSON(200, map[string]any{
+		"alive": true,
+	})
 }
 
 func NewAuthHandler(basePath string, repo IAuthRepo) *AuthHttpHandler {

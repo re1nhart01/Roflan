@@ -7,15 +7,16 @@ import (
 
 type IAuthHandler interface {
 	base.IHandler
+	AliveHandler(context *gin.Context)
 }
 
 func AuthRoute(engine *gin.Engine, handler IAuthHandler) {
 	router := engine.Group(handler.GetPath())
 	{
-		router.GET(REGISTER_ROUTE, func(context *gin.Context) {
-			context.JSON(200, map[string]string{
-				"asd": "asdas",
-			})
-		})
+		router.POST(RegisterRoute, handler.AliveHandler)
+		router.POST(LoginRoute, handler.AliveHandler)
+		router.PUT(CheckIsExistRoute, handler.AliveHandler)
+		router.POST(InitialVerificationRoute, handler.AliveHandler)
+		router.POST(VerifyCode, handler.AliveHandler)
 	}
 }

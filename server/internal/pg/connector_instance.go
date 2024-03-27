@@ -9,12 +9,12 @@ import (
 
 type IConnector interface {
 	ConnectToDatabase() error
-	GetInstance() *PostgresInstance
+	GetInstance() *DatabaseInstance
 }
 
-var pgInstance *PostgresInstance = nil
+var pgInstance *DatabaseInstance = nil
 
-type PostgresInstance struct {
+type DatabaseInstance struct {
 	Instance *gorm.DB
 	cfg      struct {
 		host     string
@@ -26,7 +26,7 @@ type PostgresInstance struct {
 }
 
 func ConnectToDatabase(isCreatedDatabase bool) error {
-	apt := PostgresInstance{
+	apt := DatabaseInstance{
 		cfg: struct {
 			host     string
 			pass     string
@@ -48,7 +48,6 @@ func ConnectToDatabase(isCreatedDatabase bool) error {
 	}[isCreatedDatabase]
 
 	dsn := fmt.Sprintf("host=%s user=%s password=%s port=%s dbname=%s", c.host, c.username, c.pass, c.port, c.dbname)
-	fmt.Println(dsn)
 	apt.Instance, _ = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if apt.Instance.Error != nil {
 		fmt.Println("something went wrong with db")
@@ -58,7 +57,7 @@ func ConnectToDatabase(isCreatedDatabase bool) error {
 	return nil
 }
 
-func GetDatabaseInstance() *PostgresInstance {
+func GetDatabaseInstance() *DatabaseInstance {
 	if pgInstance == nil {
 		if err := ConnectToDatabase(false); err != nil {
 			panic(err)
@@ -67,7 +66,7 @@ func GetDatabaseInstance() *PostgresInstance {
 	return pgInstance
 }
 
-func GDB() *PostgresInstance {
+func GDB() *DatabaseInstance {
 	if pgInstance == nil {
 		if err := ConnectToDatabase(true); err != nil {
 			panic(err)
@@ -76,7 +75,7 @@ func GDB() *PostgresInstance {
 	return pgInstance
 }
 
-func (db *PostgresInstance) Eliminate() {
+func (db *DatabaseInstance) Eliminate() {
 	if pgInstance == nil {
 		return
 	}

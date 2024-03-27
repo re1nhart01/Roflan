@@ -1,7 +1,11 @@
 package api
 
 const (
-	REGISTER_ROUTE = "register"
+	RegisterRoute            = "sign-in"
+	InitialVerificationRoute = "initial-verification"
+	VerifyCode               = "verify"
+	LoginRoute               = "log-in"
+	CheckIsExistRoute        = "check"
 )
 
 const AUTH_ROUTER = "auth_router"

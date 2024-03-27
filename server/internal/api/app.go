@@ -3,7 +3,10 @@ package api
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	api "github.com/roflan.io/api/modules/auth"
+	"github.com/roflan.io/api/middleware"
+	auth "github.com/roflan.io/api/modules/auth"
+	root "github.com/roflan.io/api/modules/root"
+	users "github.com/roflan.io/api/modules/users"
 	"github.com/roflan.io/environment"
 	"github.com/roflan.io/pg"
 	"log"
@@ -13,14 +16,14 @@ import (
 	"time"
 )
 
-type FindMeIoApplication struct {
+type Application struct {
 	Ver      string
 	ApiPath  string
 	Instance *gin.Engine
 }
 
-func NewApp(withLogger bool) *FindMeIoApplication {
-	inst := &FindMeIoApplication{
+func NewApp(withLogger bool) *Application {
+	inst := &Application{
 		Ver:      environment.GEnv().GetVariable("version"),
 		ApiPath:  environment.GEnv().GetVariable("API_PATH"),
 		Instance: gin.Default(),
@@ -36,14 +39,17 @@ func NewApp(withLogger bool) *FindMeIoApplication {
 	return inst
 }
 
-func (app *FindMeIoApplication) RunDatabaseBackgroundTasks() {}
+func (app *Application) RunDatabaseBackgroundTasks() {
 
-func (app *FindMeIoApplication) Run(port string) error {
+}
 
-	//app.Instance.Use(middlewares.ParseJSONBodyMiddleware())
-	api.RegisterHttpAuthRouter(app.Instance, app.ApiPath)
+func (app *Application) Run(port string) error {
 
-	//app.Instance.Use(middlewares.AuthMiddleware())
+	root.RegisterHttpRootRouter(app.Instance, "")
+	app.Instance.Use(middleware.BodyParserMiddlewareHandler)
+	auth.RegisterHttpAuthRouter(app.Instance, app.ApiPath)
+	app.Instance.Use(middleware.AuthMiddlewareHandler)
+	users.RegisterHttpUsersRouter(app.Instance, app.ApiPath)
 
 	httpServer := &http.Server{
 		Addr:           port,
@@ -66,7 +72,7 @@ func (app *FindMeIoApplication) Run(port string) error {
 	fmt.Println(v.String())
 	fmt.Println("Server closing...")
 
-	pg.GetDatabaseInstance().Eliminate()
+	defer pg.GetDatabaseInstance().Eliminate()
 
 	return nil
 }

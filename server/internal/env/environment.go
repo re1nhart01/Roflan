@@ -49,9 +49,9 @@ func (env *Handler) GetVariable(key string) string {
 }
 
 func (env *Handler) SetVariable(key, value string) error {
-	_ = os.Setenv(key, value)
+	err := os.Setenv(key, value)
 	env.TookVariables[key] = value
-	return nil
+	return err
 }
 
 func InitEnvironment(path string) {

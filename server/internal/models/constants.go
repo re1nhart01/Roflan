@@ -1,4 +1,4 @@
-package api
+package models
 
 const (
 	UsersTable = "users"

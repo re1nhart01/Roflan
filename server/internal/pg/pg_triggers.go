@@ -19,7 +19,7 @@ func TimestampUpdateTrigger(label string) string {
 }
 
 func CreateTimestampTriggerOnTable(tableName, label string) string {
-	return fmt.Sprintf(`CREATE TRIGGER set_timestamp
+	return fmt.Sprintf(`CREATE OR REPLACE TRIGGER set_timestamp
 		BEFORE UPDATE ON %s
 		FOR EACH ROW
 		EXECUTE PROCEDURE trigger_set_timestamp_%s();

@@ -5,6 +5,9 @@ import (
 	"time"
 )
 
+type Models struct {
+}
+
 type BaseModel struct {
 	Id        int       `json:"id"`
 	CreatedAt time.Time `json:"created_at,omitempty"`
@@ -13,10 +16,8 @@ type BaseModel struct {
 }
 
 func NewBaseModels() string {
-	return fmt.Sprintf(`
-	id SERIAL PRIMARY KEY,
+	return fmt.Sprintf(`id SERIAL PRIMARY KEY,
  	created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   	updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  	deleted_at TIMESTAMPTZ DEFAULT NULL,
-`)
+  	deleted_at TIMESTAMPTZ DEFAULT NULL,`)
 }

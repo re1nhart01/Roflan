@@ -75,6 +75,10 @@ func GDB() *DatabaseInstance {
 	return pgInstance
 }
 
+func (db *DatabaseInstance) CallManualSQL(query string) {
+	db.Instance.Exec(query)
+}
+
 func (db *DatabaseInstance) Eliminate() {
 	if pgInstance == nil {
 		return

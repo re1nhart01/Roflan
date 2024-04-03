@@ -16,6 +16,16 @@ replace github.com/roflan.io/api/modules => ./internal/api/modules
 
 replace github.com/roflan.io/helpers => ./pkg/helpers
 
+replace github.com/roflan.io/models => ./internal/models
+
+replace github.com/roflan.io/external => ./internal/external
+
+replace github.com/roflan.io/dto => ./pkg/dto
+
+replace github.com/roflan.io/crypto => ./pkg/crypto
+
+replace github.com/roflan.io/pseudo => ./pkg/pseudo
+
 require (
 	github.com/roflan.io/api v0.0.0-00010101000000-000000000000
 	github.com/roflan.io/environment v0.0.0-00010101000000-000000000000
@@ -32,7 +42,9 @@ require (
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.19.0 // indirect
+	github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
+	github.com/golang-jwt/jwt/v5 v5.2.1 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20231201235250-de7065d80cb9 // indirect
 	github.com/jackc/pgx/v5 v5.5.5 // indirect
@@ -49,6 +61,12 @@ require (
 	github.com/pelletier/go-toml/v2 v2.1.1 // indirect
 	github.com/roflan.io/api/base v0.0.0-00010101000000-000000000000 // indirect
 	github.com/roflan.io/api/modules v0.0.0-00010101000000-000000000000 // indirect
+	github.com/roflan.io/crypto v0.0.0-00010101000000-000000000000 // indirect
+	github.com/roflan.io/dto v0.0.0-00010101000000-000000000000 // indirect
+	github.com/roflan.io/external v0.0.0-00010101000000-000000000000 // indirect
+	github.com/roflan.io/helpers v0.0.0-00010101000000-000000000000 // indirect
+	github.com/roflan.io/jwt v0.0.0-00010101000000-000000000000 // indirect
+	github.com/roflan.io/models v0.0.0-00010101000000-000000000000 // indirect
 	github.com/rogpeppe/go-internal v1.12.0 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.12 // indirect

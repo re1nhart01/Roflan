@@ -17,6 +17,18 @@ func GiveUnprocessed(customMsg string) (int, map[string]any) {
 	}
 }
 
+func GiveBadRequest(customMsg string, data any) (int, map[string]any) {
+	store := map[string]any{
+		"statusCode": http.StatusBadRequest,
+		"message":    "StatusBadRequest",
+		"hint":       customMsg,
+	}
+	if data != nil {
+		store["data"] = data
+	}
+	return http.StatusBadRequest, store
+}
+
 func GiveForbidden() (int, map[string]any) {
 	return http.StatusForbidden, map[string]any{
 		"statusCode": http.StatusForbidden,

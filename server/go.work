@@ -9,5 +9,10 @@ use (
 	./internal/api/base
 	./internal/api/modules
 	./pkg/helpers
-	.
+	./internal/models
+	./internal/external
+	./pkg/dto
+	 ./pkg/crypto
+	 ./pkg/pseudo
+	 .
 )

@@ -1,7 +1,6 @@
 package jwt
 
 import (
-	"strconv"
 	"testing"
 	"time"
 )
@@ -12,7 +11,7 @@ func TestCreateToken(t *testing.T) {
 
 	expirationTime := time.Now().Add(50 * time.Minute)
 
-	got1, err := CreateToken(argsUserHash, argsId, &expirationTime)
+	got1, err := CreateToken(argsUserHash, argsId, "access", &expirationTime)
 	println(got1)
 	if err != nil {
 		t.Error(err)
@@ -30,8 +29,8 @@ func TestCheckIsTokenExpired(t *testing.T) {
 	expirationTime := time.Now().Add(5 * time.Minute)
 	zeroTime := time.Now()
 
-	got1, err1 := CreateToken(argsUserHash, argsId, &expirationTime)
-	got2, err2 := CreateToken(argsUserHash, argsId, &zeroTime)
+	got1, err1 := CreateToken(argsUserHash, argsId, "refresh", &expirationTime)
+	got2, err2 := CreateToken(argsUserHash, argsId, "access", &zeroTime)
 
 	println(got1)
 	println(got2)
@@ -57,30 +56,30 @@ func TestVerifyToken(t *testing.T) {
 
 	expirationTime := time.Now().Add(50 * time.Minute)
 
-	got1, err := CreateToken(argsUserHash, argsId, &expirationTime)
+	got1, err := CreateToken(argsUserHash, argsId, "refresh", &expirationTime)
 	print(got1)
 	if err != nil {
 		t.Error(err)
 	}
 
-	userHash, identify, expirationTimer, err := VerifyToken(got1)
+	claims, err := VerifyToken(got1)
 
 	if err != nil {
 		t.Error(err)
 	}
 
-	if userHash != argsUserHash {
+	if claims.UserHash != argsUserHash {
 		t.Error("invalid userHash")
 	}
 
-	if identify != strconv.Itoa(argsId) {
+	if claims.Id != argsId {
 		t.Error("invalid identify")
 	}
 
-	if expirationTimer != expirationTime.Unix() {
+	if claims.ExpiresAt.Unix() != expirationTime.Unix() {
 		t.Error("invalid identify")
 	}
 
-	println(argsUserHash, userHash, argsId, identify, expirationTimer)
+	println(argsUserHash, claims)
 
 }

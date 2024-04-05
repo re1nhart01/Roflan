@@ -7,18 +7,20 @@ import (
 
 type IAuthHandler interface {
 	base.IHandler
-	AliveHandler(context *gin.Context)
+	RefreshTokensHandler(context *gin.Context)
 	CheckIsExistsHandler(context *gin.Context)
 	RegisterHandler(context *gin.Context)
+	LoginHandler(context *gin.Context)
+	VerifyCodeHandler(context *gin.Context)
 }
 
 func AuthRoute(engine *gin.Engine, handler IAuthHandler) {
 	router := engine.Group(handler.GetPath())
 	{
 		router.POST(RegisterRoute, handler.RegisterHandler)
-		router.POST(LoginRoute, handler.AliveHandler)
+		router.POST(LoginRoute, handler.LoginHandler)
 		router.PUT(CheckIsExistRoute, handler.CheckIsExistsHandler)
-		router.POST(VerifyCode, handler.AliveHandler)
-		router.PATCH(RefreshToken, handler.AliveHandler)
+		router.POST(VerifyCode, handler.VerifyCodeHandler)
+		router.PATCH(RefreshToken, handler.RefreshTokensHandler)
 	}
 }

@@ -24,16 +24,16 @@ func AuthMiddlewareHandler(context *gin.Context) {
 		return
 	}
 
-	userHash, id, expirationTime, err := jwt.VerifyToken(strings.TrimSpace(parsedHeader[1]))
+	claims, err := jwt.VerifyToken(strings.TrimSpace(parsedHeader[1]))
 
 	if err != nil {
 		context.AbortWithStatusJSON(helpers.GiveUnauthorized())
 		return
 	}
 	body := map[string]any{
-		"userHash":       userHash,
-		"id":             id,
-		"expirationTime": expirationTime,
+		"userHash":       claims.UserHash,
+		"id":             claims.Id,
+		"expirationTime": claims.ExpiresAt,
 	}
 
 	context.Set("userData", body)

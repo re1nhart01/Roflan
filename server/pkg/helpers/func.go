@@ -3,6 +3,7 @@ package helpers
 import (
 	"crypto/rand"
 	"io"
+	"regexp"
 	"strings"
 )
 
@@ -122,4 +123,13 @@ func EncodeToString(max int) string {
 		b[i] = table[int(b[i])%len(table)]
 	}
 	return string(b)
+}
+
+func HasPhoneNumber(s string) bool {
+	phoneRegex := `(?i)\+?\d[\d\s\-\(\)]{7,}\d`
+	r, err := regexp.Compile(phoneRegex)
+	if err != nil {
+		return false
+	}
+	return r.MatchString(s)
 }

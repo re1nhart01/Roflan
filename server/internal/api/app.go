@@ -3,7 +3,6 @@ package api
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/roflan.io/api/middleware"
 	auth "github.com/roflan.io/api/modules/auth"
 	root "github.com/roflan.io/api/modules/root"
@@ -12,7 +11,6 @@ import (
 	"github.com/roflan.io/external/telegram"
 	"github.com/roflan.io/models"
 	"github.com/roflan.io/pg"
-	"github.com/roflan.io/pseudo"
 	"log"
 	"net/http"
 	"os"
@@ -47,31 +45,11 @@ func NewApp(withLogger bool) *Application {
 func (app *Application) RunDatabaseBackgroundTasks() {
 	var wg sync.WaitGroup
 	wg.Add(2)
-	pseudo.AddCode("+380935269398", true)
-	go func() {
-		for i := 0; i < 11; i++ {
-			fmt.Println(pseudo.PSEUDO_ENTITY.CodeHandler["+380935269398"])
-			time.Sleep(1 * time.Second)
-		}
-	}()
 	go pg.InitializeFunctions(&wg)
 	go pg.InitializeTables(&wg, &models.Models{})
 	go telegram.NewTelegramHandler().
 		Register(telegram.HandleUpdateUserChatId).
-		Register(func(response tgbotapi.Update, bot *tgbotapi.BotAPI) error {
-			fmt.Println(response, "two")
-			update := response
-			if update.Message != nil { // If we got a message
-				fmt.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
-
-				msg := tgbotapi.NewMessage(update.Message.Chat.ID, "2134")
-				//msg.ReplyToMessageID = update.Message.MessageID
-
-				m, err := bot.Send(msg)
-				fmt.Println(m, err)
-			}
-			return nil
-		}).Connect()
+		Connect()
 	wg.Wait()
 }
 

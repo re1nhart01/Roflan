@@ -9,6 +9,7 @@ import (
 type IModels interface {
 	NewRolesTable() string
 	NewUsersTable() string
+	NewTelegramIdsTable() string
 }
 
 func InitializeTables(wg *sync.WaitGroup, models IModels) {
@@ -18,6 +19,7 @@ func InitializeTables(wg *sync.WaitGroup, models IModels) {
 	instance.CallManualSQL(models.NewRolesTable())
 	instance.CallManualSQL("insert into public.roles (key, value_representation) values ('test', 'test');")
 	instance.CallManualSQL(models.NewUsersTable())
+	instance.CallManualSQL(models.NewTelegramIdsTable())
 }
 
 func InitializeFunctions(wg *sync.WaitGroup) {

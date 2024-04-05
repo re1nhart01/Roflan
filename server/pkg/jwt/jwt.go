@@ -5,23 +5,29 @@ import (
 	"fmt"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/roflan.io/environment"
-	"strconv"
 	"strings"
 	"time"
 )
 
 type UserClaim struct {
-	UserHash string `json:"user_hash,omitempty"`
-	Id       int    `json:"id,omitempty"`
+	UserHash  string `json:"user_hash,omitempty"`
+	Id        int    `json:"id,omitempty"`
+	TokenType string `json:"token_type"`
 	jwt.RegisteredClaims
 }
 
-func CreateToken(userHash string, id int, expirationTime *time.Time) (string, error) {
+const (
+	RefreshTokenType = "refresh"
+	AccessTokenType  = "access"
+)
+
+func CreateToken(userHash string, id int, tokenType string, expirationTime *time.Time) (string, error) {
 	serverKey := environment.GEnv().GetVariable("SERVER_KEY")
 
 	claims := &UserClaim{
 		UserHash:         userHash,
 		Id:               id,
+		TokenType:        tokenType,
 		RegisteredClaims: jwt.RegisteredClaims{},
 	}
 
@@ -36,7 +42,7 @@ func CreateToken(userHash string, id int, expirationTime *time.Time) (string, er
 	return tokenString, err
 }
 
-func VerifyToken(tokenString string) (string, string, int64, error) {
+func VerifyToken(tokenString string) (*UserClaim, error) {
 	serverKey := environment.GEnv().GetVariable("SERVER_KEY")
 	claimsInstance := &UserClaim{}
 	println(serverKey)
@@ -48,13 +54,13 @@ func VerifyToken(tokenString string) (string, string, int64, error) {
 	})
 
 	if err != nil || !tToken.Valid {
-		return "", "", 0, err
+		return new(UserClaim), err
 	}
 
 	if !tToken.Valid {
-		return "", "", 0, err
+		return new(UserClaim), err
 	}
-	return claimsInstance.UserHash, strconv.Itoa(claimsInstance.Id), claimsInstance.ExpiresAt.Unix(), nil
+	return claimsInstance, nil
 }
 
 func ValidateToken(tokenString string) bool {

@@ -87,9 +87,16 @@ var ValidateCodeDto = &dto.FieldsMapping{
 		Max:      6,
 		Name:     "code",
 	},
+	"phone": &dto.FieldDto{
+		Type:     "STRING",
+		Required: true,
+		Min:      5,
+		Max:      100,
+		Name:     "phone",
+	},
 }
 
-var AuthCheckEmailDto = &dto.FieldsMapping{
+var AuthCheckPhoneDto = &dto.FieldsMapping{
 	"phone": &dto.FieldDto{
 		Type:     "STRING",
 		Required: true,

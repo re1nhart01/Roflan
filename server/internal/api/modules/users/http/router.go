@@ -8,11 +8,12 @@ import (
 type IUserHandler interface {
 	base.IHandler
 	AliveHandler(context *gin.Context)
+	GetMyProfile(context *gin.Context)
 }
 
 func UserRoute(engine *gin.Engine, handler IUserHandler) {
 	router := engine.Group(handler.GetPath())
 	{
-		router.POST(MeRoute, handler.AliveHandler)
+		router.GET(MeRoute, handler.GetMyProfile)
 	}
 }

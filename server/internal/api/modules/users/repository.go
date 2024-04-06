@@ -11,6 +11,17 @@ type UserRepository struct {
 	*base.Repository
 }
 
+func (user *UserRepository) CreateDefaultPreferences(userHash string) error {
+	return pg.
+		GDB().
+		Instance.Table(models.UserPreferencesTable).Create(&models.UserPreferencesModel{
+		UserHashId:            userHash,
+		Theme:                 models.DefaultTheme,
+		Lang:                  models.LocaleEN,
+		DisabledNotifications: false,
+	}).Error
+}
+
 func (user *UserRepository) CheckIsExistsByField(field, value string) bool {
 	var existedModel models.UsersModel
 	return pg.
@@ -58,6 +69,22 @@ func (user *UserRepository) GetTelegramIdsByLabel(label, value string) ([]models
 	}
 
 	return result, nil
+}
+
+func (user *UserRepository) ReadUserData(userHash string) (map[string]any, error) {
+	model := map[string]any{}
+
+	if err := pg.
+		GDB().
+		Instance.
+		Table(models.UsersTable).
+		Where("users.user_hash = ?", userHash).
+		Joins("left join (select * from user_preferences) as pref on users.user_hash = pref.user_hash_id").
+		Scan(&model); err.Error != nil {
+		return model, err.Error
+	}
+
+	return model, nil
 }
 
 func NewUsersRepository() *UserRepository {

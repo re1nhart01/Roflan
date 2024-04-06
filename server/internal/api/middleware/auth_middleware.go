@@ -34,6 +34,7 @@ func AuthMiddlewareHandler(context *gin.Context) {
 		"userHash":       claims.UserHash,
 		"id":             claims.Id,
 		"expirationTime": claims.ExpiresAt,
+		"claims":         claims,
 	}
 
 	context.Set("userData", body)

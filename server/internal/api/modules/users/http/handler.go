@@ -4,9 +4,11 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/roflan.io/api/base"
+	"github.com/roflan.io/helpers"
 )
 
 type IUserRepo interface {
+	ReadUserData(userHash string) (map[string]any, error)
 }
 
 type UserHttpHandler struct {
@@ -20,6 +22,22 @@ func (user *UserHttpHandler) GetPath() string {
 
 func (user *UserHttpHandler) GetName() string {
 	return user.Name
+}
+
+func (user *UserHttpHandler) GetMyProfile(context *gin.Context) {
+	userD, stopped := user.UnwrapUserData(context)
+	if stopped {
+		return
+	}
+	userHash := userD["userHash"].(string)
+
+	userData, err := user.ReadUserData(userHash)
+	if err != nil {
+		context.JSON(helpers.GiveBadRequest(err.Error(), nil))
+		return
+	}
+
+	context.JSON(helpers.GiveOkResponseWithData(userData))
 }
 
 func (user *UserHttpHandler) AliveHandler(context *gin.Context) {

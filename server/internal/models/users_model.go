@@ -24,6 +24,11 @@ type UsersModel struct {
 	*BaseModel
 }
 
+type FullUserModel struct {
+	*UsersModel
+	*UserPreferencesModel
+}
+
 func (m *Models) NewUsersTable() string {
 	return fmt.Sprintf(`CREATE TABLE IF NOT EXISTS %s (
 	    %s

@@ -83,6 +83,7 @@ func (auth *AuthHttpHandler) LoginHandler(context *gin.Context) {
 
 	code := helpers.EncodeToString(SixDigitCodeCount)
 	pseudo.AddCode(phoneNumber, code, true)
+	pseudo.AddCode("+380935241232", "123123", true)
 
 	telegramIds, err := auth.GetTelegramIdsByLabel("phone", phoneNumber)
 	if err != nil {

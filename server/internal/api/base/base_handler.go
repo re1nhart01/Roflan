@@ -34,3 +34,13 @@ func (h *Handler) Unwrap(context *gin.Context, dtoMap *dto.FieldsMapping) (map[s
 
 	return body, false
 }
+
+func (h *Handler) UnwrapUserData(context *gin.Context) (map[string]any, bool) {
+	bodyData, ok := context.Get("userData")
+	if !ok {
+		context.JSON(helpers.GiveBadRequest(BodyNotExists, nil))
+		return map[string]any{}, true
+	}
+
+	return bodyData.(map[string]any), false
+}

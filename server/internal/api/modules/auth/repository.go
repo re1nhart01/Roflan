@@ -24,6 +24,7 @@ func (auth *AuthRepository) CreateInitialUser(username, password, firstName, las
 	serverHash := environment.GEnv().GetVariable("SERVER_KEY")
 	userSalt := fmt.Sprintf("%s:%s:%s:%s", username, firstName, lastName, patronymic)
 	userHash := crypto.GetSha1(serverHash, userSalt)
+
 	userModel := models.UsersModel{
 		UserHash:   userHash,
 		Username:   username,
@@ -38,6 +39,11 @@ func (auth *AuthRepository) CreateInitialUser(username, password, firstName, las
 		Birthday:   time.Now(),
 	}
 	modelling := pg.GDB().Instance.Table(models.UsersTable).Create(&userModel)
+
+	if err := auth.CreateDefaultPreferences(userHash); err != nil {
+		return errors.New(api2.CreatePreferencesError)
+	}
+
 	return modelling.Error
 }
 
@@ -62,6 +68,7 @@ func (auth *AuthRepository) GenerateUserTokens(label, value string) (map[string]
 	if err != nil {
 		return make(map[string]any), err
 	}
+
 	accessTokenExpiration := time.Now().Add(api2.AccessTokenExpirationTime * time.Second)
 	accessToken, err := jwt.CreateToken(user.UserHash, user.Id, jwt.AccessTokenType, &accessTokenExpiration)
 	if err != nil {

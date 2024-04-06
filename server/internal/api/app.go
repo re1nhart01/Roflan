@@ -6,6 +6,7 @@ import (
 	"github.com/roflan.io/api/middleware"
 	auth "github.com/roflan.io/api/modules/auth"
 	root "github.com/roflan.io/api/modules/root"
+	topics "github.com/roflan.io/api/modules/topics"
 	users "github.com/roflan.io/api/modules/users"
 	"github.com/roflan.io/environment"
 	"github.com/roflan.io/external/telegram"
@@ -60,6 +61,7 @@ func (app *Application) Run(port string) error {
 	auth.RegisterHttpAuthRouter(app.Instance, app.ApiPath)
 	app.Instance.Use(middleware.AuthMiddlewareHandler)
 	users.RegisterHttpUsersRouter(app.Instance, app.ApiPath)
+	topics.RegisterHttpTopicsRouter(app.Instance, app.ApiPath)
 
 	httpServer := &http.Server{
 		Addr:           port,

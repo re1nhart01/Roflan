@@ -10,6 +10,7 @@ type IModels interface {
 	NewRolesTable() string
 	NewUsersTable() string
 	NewTelegramIdsTable() string
+	NewUserPreferencesTable() string
 }
 
 func InitializeTables(wg *sync.WaitGroup, models IModels) {
@@ -20,6 +21,7 @@ func InitializeTables(wg *sync.WaitGroup, models IModels) {
 	instance.CallManualSQL("insert into public.roles (key, value_representation) values ('test', 'test');")
 	instance.CallManualSQL(models.NewUsersTable())
 	instance.CallManualSQL(models.NewTelegramIdsTable())
+	instance.CallManualSQL(models.NewUserPreferencesTable())
 }
 
 func InitializeFunctions(wg *sync.WaitGroup) {

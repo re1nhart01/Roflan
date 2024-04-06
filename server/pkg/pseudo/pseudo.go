@@ -2,7 +2,6 @@ package pseudo
 
 import (
 	"context"
-	"fmt"
 	"strconv"
 	"time"
 )
@@ -10,33 +9,46 @@ import (
 // Important: It's pseudo redis, to handle codes
 
 type Pseudo struct {
-	CodeHandler map[string]int
+	CodeHandler           map[string]int
+	CodeHandlerCancelFunc map[string]context.CancelFunc
 }
 
-var PSEUDO_ENTITY = &Pseudo{CodeHandler: map[string]int{}}
-
-var ctx, cancel = context.WithCancel(context.Background())
+var Entity = &Pseudo{
+	CodeHandler:           map[string]int{},
+	CodeHandlerCancelFunc: map[string]context.CancelFunc{},
+}
 
 func AddCode(phone string, code string, withExpiration bool) {
 	toInt, _ := strconv.Atoi(code)
-	PSEUDO_ENTITY.CodeHandler[phone] = toInt
-	fmt.Println(toInt)
+	Entity.CodeHandler[phone] = toInt
+
 	if withExpiration {
-		go func() {
-			time.Sleep(40 * time.Second)
-			delete(PSEUDO_ENTITY.CodeHandler, phone)
-		}()
+		var outerCtx, cancel = context.WithCancel(context.Background())
+		Entity.CodeHandlerCancelFunc[phone] = cancel
+		go func(ctx context.Context, phone string) {
+			select {
+			case <-time.After(40 * time.Second):
+				delete(Entity.CodeHandler, phone)
+				delete(Entity.CodeHandlerCancelFunc, phone)
+			case <-ctx.Done():
+				delete(Entity.CodeHandler, phone)
+
+			}
+		}(outerCtx, phone)
 	}
 }
 
 func RemoveCode(phone string) {
-	delete(PSEUDO_ENTITY.CodeHandler, phone)
+	if Entity.CodeHandlerCancelFunc[phone] != nil {
+		Entity.CodeHandlerCancelFunc[phone]()
+	}
+	delete(Entity.CodeHandler, phone)
 }
 
 func GetCode(phone string) string {
-	return strconv.Itoa(PSEUDO_ENTITY.CodeHandler[phone])
+	return strconv.Itoa(Entity.CodeHandler[phone])
 }
 
 func IsCodeExists(phone string) bool {
-	return PSEUDO_ENTITY.CodeHandler[phone] != 0
+	return Entity.CodeHandler[phone] != 0
 }

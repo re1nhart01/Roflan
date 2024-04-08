@@ -54,14 +54,18 @@ func (app *Application) RunDatabaseBackgroundTasks() {
 	wg.Wait()
 }
 
-func (app *Application) Run(port string) error {
-
+func (app *Application) BindHandlers() {
 	root.RegisterHttpRootRouter(app.Instance, "")
 	app.Instance.Use(middleware.BodyParserMiddlewareHandler)
 	auth.RegisterHttpAuthRouter(app.Instance, app.ApiPath)
 	app.Instance.Use(middleware.AuthMiddlewareHandler)
 	users.RegisterHttpUsersRouter(app.Instance, app.ApiPath)
 	topics.RegisterHttpTopicsRouter(app.Instance, app.ApiPath)
+}
+
+func (app *Application) Run(port string) error {
+	
+	app.BindHandlers()
 
 	httpServer := &http.Server{
 		Addr:           port,

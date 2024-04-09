@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"crypto/rand"
+	"encoding/json"
 	"io"
 	"regexp"
 	"strings"
@@ -132,4 +133,13 @@ func HasPhoneNumber(s string) bool {
 		return false
 	}
 	return r.MatchString(s)
+}
+
+func ParseByteToMap(data []byte) map[string]any {
+	result := map[string]any{}
+	err := json.Unmarshal(data, &result)
+	if err != nil {
+		return map[string]any{}
+	}
+	return result
 }

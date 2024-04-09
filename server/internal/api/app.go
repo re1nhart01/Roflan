@@ -5,8 +5,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/roflan.io/api/middleware"
 	auth "github.com/roflan.io/api/modules/auth"
+	messaging "github.com/roflan.io/api/modules/messaging"
 	root "github.com/roflan.io/api/modules/root"
-	topics "github.com/roflan.io/api/modules/topics"
 	users "github.com/roflan.io/api/modules/users"
 	"github.com/roflan.io/environment"
 	"github.com/roflan.io/external/telegram"
@@ -56,15 +56,17 @@ func (app *Application) RunDatabaseBackgroundTasks() {
 
 func (app *Application) BindHandlers() {
 	root.RegisterHttpRootRouter(app.Instance, "")
+	messaging.RegisterWSMessagingRouter(app.Instance, app.ApiPath)
 	app.Instance.Use(middleware.BodyParserMiddlewareHandler)
 	auth.RegisterHttpAuthRouter(app.Instance, app.ApiPath)
 	app.Instance.Use(middleware.AuthMiddlewareHandler)
 	users.RegisterHttpUsersRouter(app.Instance, app.ApiPath)
-	topics.RegisterHttpTopicsRouter(app.Instance, app.ApiPath)
+	messaging.RegisterHttpTopicsRouter(app.Instance, app.ApiPath)
+	messaging.RegisterHttpMessageRouter(app.Instance, app.ApiPath)
 }
 
 func (app *Application) Run(port string) error {
-	
+
 	app.BindHandlers()
 
 	httpServer := &http.Server{

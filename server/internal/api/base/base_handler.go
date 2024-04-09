@@ -44,3 +44,19 @@ func (h *Handler) UnwrapUserData(context *gin.Context) (map[string]any, bool) {
 
 	return bodyData.(map[string]any), false
 }
+
+func (h *Handler) Knox(context *gin.Context, val []string) (map[string]any, bool) {
+	result := map[string]any{}
+	for _, v := range val {
+		c := context.Param(v)
+		if c != "" {
+			result[v] = c
+		}
+		q := context.Query(v)
+		if q != "" {
+			result[v] = q
+		}
+	}
+
+	return result, false
+}

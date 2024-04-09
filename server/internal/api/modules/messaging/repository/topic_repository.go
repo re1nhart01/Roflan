@@ -1,4 +1,4 @@
-package api
+package repository
 
 import (
 	"github.com/roflan.io/api/base"

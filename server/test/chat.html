@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Chat</title>
+    <script>
+        let websocket = null;
+
+        function connect() {
+            const url = document.getElementById('ws-url').value;
+            websocket = new WebSocket(url);
+
+            websocket.onopen = function() {
+                showMessage('Connected to ' + url);
+            };
+
+            websocket.onmessage = function(event) {
+                showMessage('Message from server: ' + event.data);
+            };
+
+            websocket.onerror = function() {
+                showMessage('WebSocket error');
+            };
+
+            websocket.onclose = function(event) {
+                showMessage('WebSocket connection closed: ' + event.code);
+            };
+        }
+
+        function sendMessage() {
+            if(websocket && websocket.readyState === WebSocket.OPEN) {
+                const message = document.getElementById('message').value;
+                websocket.send(JSON.stringify({msg: message}));
+                showMessage('You: ' + message);
+            } else {
+                alert('WebSocket is not connected.');
+            }
+        }
+
+        function showMessage(message) {
+            const messages = document.getElementById('messages');
+            messages.value += message + '\n';
+        }
+    </script>
+</head>
+<body>
+<h2>Mini Chat via WebSocket</h2>
+<input type="text" id="ws-url" placeholder="ws://example.com/socket">
+<button onclick="connect()">Connect</button>
+<br><br>
+<input type="text" id="message" placeholder="Type your message here...">
+<button onclick="sendMessage()">Send</button>
+<br><br>
+<textarea id="messages" rows="10" cols="50" readonly></textarea>
+</body>
+</html>

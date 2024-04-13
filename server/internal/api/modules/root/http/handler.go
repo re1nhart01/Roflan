@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/roflan.io/api/base"
 	"github.com/roflan.io/environment"
+	"github.com/roflan.io/helpers"
 )
 
 type IRootRepo interface {
@@ -29,6 +30,14 @@ func (root *RootHttpHandler) AliveHandler(context *gin.Context) {
 		"version": environment.GEnv().GetVariable("version"),
 		"author":  environment.GEnv().GetVariable("AUTHOR"),
 	})
+}
+
+func (root *RootHttpHandler) CheckerHandler(context *gin.Context) {
+	b, ok := context.Get("body")
+	context.JSON(helpers.GiveOkResponseWithData(map[string]any{
+		"ok":   ok,
+		"body": b,
+	}))
 }
 
 func NewRootHandler(basePath string, repo IRootRepo) *RootHttpHandler {

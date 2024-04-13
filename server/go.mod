@@ -26,6 +26,8 @@ replace github.com/roflan.io/crypto => ./pkg/crypto
 
 replace github.com/roflan.io/pseudo => ./pkg/pseudo
 
+replace github.com/roflan.io/socket => ./pkg/socket
+
 require (
 	github.com/roflan.io/api v0.0.0-00010101000000-000000000000
 	github.com/roflan.io/environment v0.0.0-00010101000000-000000000000
@@ -68,6 +70,8 @@ require (
 	github.com/roflan.io/helpers v0.0.0-00010101000000-000000000000 // indirect
 	github.com/roflan.io/jwt v0.0.0-00010101000000-000000000000 // indirect
 	github.com/roflan.io/models v0.0.0-00010101000000-000000000000 // indirect
+	github.com/roflan.io/pseudo v0.0.0-00010101000000-000000000000 // indirect
+	github.com/roflan.io/socket v0.0.0-00010101000000-000000000000 // indirect
 	github.com/rogpeppe/go-internal v1.12.0 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.12 // indirect

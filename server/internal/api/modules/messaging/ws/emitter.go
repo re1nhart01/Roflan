@@ -3,12 +3,13 @@ package ws
 import (
 	"fmt"
 	"github.com/roflan.io/helpers"
+	"github.com/roflan.io/socket"
 )
 
 type SocketEmitter struct {
 }
 
-func (emitter *SocketEmitter) EmitByEvent(client *SocketClient, message SocketMessage) error {
+func (emitter *SocketEmitter) EmitByEvent(client *socket.SocketClient, message *socket.SocketMessage) error {
 
 	fmt.Println(helpers.ParseByteToMap(message.Message))
 	//event := socketMessage.ParseSocketMessage()

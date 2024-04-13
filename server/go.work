@@ -14,5 +14,5 @@ use (
 	./pkg/dto
 	 ./pkg/crypto
 	 ./pkg/pseudo
-	 .
+	 ./pkg/socket
 )

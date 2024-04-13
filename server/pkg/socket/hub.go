@@ -1,4 +1,4 @@
-package ws
+package socket
 
 import "github.com/gorilla/websocket"
 
@@ -7,6 +7,11 @@ type SocketClient struct {
 	Hub       Hub
 	UserHash  string
 	TopicId   string
+}
+
+type SocketMessage struct {
+	MessageType int
+	Message     []byte
 }
 
 type Hub map[string]map[string]*SocketClient

@@ -6,6 +6,7 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/roflan.io/api/base"
 	"github.com/roflan.io/jwt"
+	socket2 "github.com/roflan.io/socket"
 	"net/http"
 	"strings"
 )
@@ -39,18 +40,23 @@ func (messaging *MessagingWSHandler) ConnectToSocketHandler(context *gin.Context
 	topicId := context.Param("topic_id")
 
 	socket, err := upgrader.Upgrade(context.Writer, context.Request, nil)
+	closeHandler := socket.CloseHandler()
 	defer socket.Close()
 
 	if err != nil || topicId == "" || userToken == "" {
-		socket.Close()
+		closeHandler(1487, "no topicId or UserToken")
 		return
 	}
 
 	claims, err := jwt.VerifyToken(strings.TrimSpace(userToken))
-	hub := GetHub()
+	if err != nil {
+		closeHandler(1488, "verification error")
+		return
+	}
+	hub := socket2.GetHub()
 	emitter := NewEmitter()
 
-	client := &SocketClient{
+	client := &socket2.SocketClient{
 		Connector: socket,
 		Hub:       *hub,
 		UserHash:  claims.UserHash,
@@ -58,25 +64,13 @@ func (messaging *MessagingWSHandler) ConnectToSocketHandler(context *gin.Context
 	}
 
 	hub.AddClient(client, topicId)
+	caller := socket2.NewSocketCaller()
 
-	for {
-		mT, message, err := client.Connector.ReadMessage()
-
-		if err != nil {
-			client.Hub.RemoveClient(client.UserHash, topicId)
-			return
-		}
-
-		msg := SocketMessage{
-			MessageType: mT,
-			Message:     message,
-		}
-
-		if err := emitter.EmitByEvent(client, msg); err != nil {
-			client.Hub.RemoveClient(client.UserHash, topicId)
-			return
-		}
-	}
+	caller.Call(&socket2.Caller{
+		Emitter: emitter,
+		Hub:     hub,
+		Client:  client,
+	})
 }
 
 func NewMessagingHandler(basePath string, repo IMessagingRepo) *MessagingWSHandler {

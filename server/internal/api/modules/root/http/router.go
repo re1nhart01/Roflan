@@ -8,11 +8,13 @@ import (
 type IAuthHandler interface {
 	base.IHandler
 	AliveHandler(context *gin.Context)
+	CheckerHandler(context *gin.Context)
 }
 
 func RootRoute(engine *gin.Engine, handler IAuthHandler) {
 	router := engine.Group(handler.GetPath())
 	{
 		router.GET(ALIVE_ROUTE, handler.AliveHandler)
+		router.POST(LoggerRoute, handler.CheckerHandler)
 	}
 }

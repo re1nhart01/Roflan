@@ -5,6 +5,8 @@ const (
 	RolesTable           = "roles"
 	TelegramIdsTable     = "telegram_ids"
 	UserPreferencesTable = "user_preferences"
+
+	FilesTable = "files"
 )
 
 const SexTuples = `('male', 'female', 'other')`

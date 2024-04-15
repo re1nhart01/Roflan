@@ -1,9 +1,18 @@
 package base
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/roflan.io/dto"
 	"github.com/roflan.io/helpers"
+)
+
+const (
+	GetDetails = ":id"
+	GetList    = ""
+	Add        = ""
+	Update     = ""
+	Delete     = ""
 )
 
 type IHandler interface {
@@ -16,10 +25,36 @@ type Handler struct {
 	Path string
 }
 
+type CRUDOps interface {
+	GetHandler(context *gin.Context)
+	GetSpecificHandler(context *gin.Context)
+	AddHandler(context *gin.Context)
+	RemoveHandler(context *gin.Context)
+	UpdateHandler(context *gin.Context)
+}
+
 const (
 	BodyNotExists = "Body Not Exists or it's empty"
 )
 
+func (h *Handler) UnwrapMultipart(context *gin.Context, dtoMap *dto.FieldsMapping) (map[string]any, bool) {
+	bodyData, err := context.MultipartForm()
+	if err != nil {
+		context.JSON(helpers.GiveBadRequest(BodyNotExists, nil))
+		return map[string]any{}, true
+	}
+	fmt.Println(bodyData.File, bodyData.Value)
+	body, errorsDto := dto.ValidateModelWithDto(dto.MultipartBodyTransform{
+		"files":  bodyData.File,
+		"values": bodyData.Value,
+	}, dtoMap, new(dto.ErrorList))
+	if dto.HasErrors(errorsDto) {
+		context.JSON(helpers.GiveBadRequest(dto.DtoError, errorsDto))
+		return map[string]any{}, true
+	}
+
+	return body, false
+}
 func (h *Handler) Unwrap(context *gin.Context, dtoMap *dto.FieldsMapping) (map[string]any, bool) {
 	bodyData, ok := context.Get("body")
 	if !ok {

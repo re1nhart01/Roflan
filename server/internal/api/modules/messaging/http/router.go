@@ -7,11 +7,7 @@ import (
 
 type IMessagingCRUD interface {
 	base.IHandler
-	GetHandler(context *gin.Context)
-	GetSpecificHandler(context *gin.Context)
-	AddHandler(context *gin.Context)
-	RemoveHandler(context *gin.Context)
-	UpdateHandler(context *gin.Context)
+	base.CRUDOps
 }
 
 func TopicsRoute(engine *gin.Engine, handler IMessagingCRUD) {

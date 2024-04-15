@@ -41,6 +41,9 @@ func NewApp(withLogger bool) *Application {
 	if !withLogger {
 		inst.Instance = gin.New()
 	}
+
+	inst.Instance.MaxMultipartMemory = 10 << 20
+
 	return inst
 }
 

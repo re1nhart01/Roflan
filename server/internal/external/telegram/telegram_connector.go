@@ -6,6 +6,7 @@ import (
 	"github.com/roflan.io/environment"
 	"github.com/roflan.io/external"
 	"log"
+	"strconv"
 )
 
 type TGCallback func(response tgbotapi.Update, bot *tgbotapi.BotAPI) error
@@ -20,7 +21,7 @@ func (handler *Handler) Connect() *Handler {
 		log.Panic(err)
 	}
 
-	bot.Debug = true
+	bot.Debug, _ = strconv.ParseBool(environment.GEnv().GetVariable("TELEGRAM_DEBUG"))
 
 	fmt.Printf("Authorized on account %s", bot.Self.UserName)
 

@@ -1,7 +1,7 @@
 package http
 
 const (
-	GetDetails = "details"
+	GetDetails = ":id"
 	GetList    = ""
 	Add        = ""
 	Update     = ""

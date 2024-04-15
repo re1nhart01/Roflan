@@ -36,6 +36,8 @@ type ErrorDto struct {
 type ErrorList = []ErrorDto
 type FieldsMapping map[string]*FieldDto
 
+type MultipartBodyTransform map[string]any
+
 var dtoWg *sync.WaitGroup
 
 type FieldDto struct {
@@ -56,13 +58,15 @@ type FieldDto struct {
 }
 
 var MapTypes = map[string]string{
-	"STRING":  "string",
-	"INTEGER": "int",
-	"OBJECT":  "map[string]interface {}",
-	"NULL":    "null",
-	"ARRAY":   "[]interface {}",
-	"FLOAT":   "float64",
-	"BOOL":    "bool",
+	"STRING":           "string",
+	"INTEGER":          "int",
+	"OBJECT":           "map[string]interface {}",
+	"NULL":             "null",
+	"ARRAY":            "[]interface {}",
+	"FLOAT":            "float64",
+	"BOOL":             "bool",
+	"MULTIPART_FILE":   "map[string][]*multipart.FileHeader",
+	"MULTIPART_VALUES": "map[string][]string",
 }
 
 func addError(errs *ErrorList, key string, errorStringList ...string) {
@@ -121,6 +125,7 @@ func ValidateModelWithDto(body map[string]any, typeModel *FieldsMapping, errors 
 		validateArray(v, typeEqual, fieldFromBody, errors, k)
 		validateBool(v, typeEqual, fieldFromBody, errors, k)
 		validateObject(v, typeEqual, fieldFromBody, errors, k)
+		validateFile(v, typeEqual, fieldFromBody, errors, k)
 	}
 	return body, errors
 }

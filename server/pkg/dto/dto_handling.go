@@ -3,6 +3,7 @@ package dto
 import (
 	"fmt"
 	"github.com/roflan.io/helpers"
+	"mime/multipart"
 	"reflect"
 )
 
@@ -78,5 +79,35 @@ func validateObject(v *FieldDto, typeEqual bool, fieldFromBody any, errors *Erro
 func validateBool(v *FieldDto, typeEqual bool, fieldFromBody any, errors *ErrorList, index string) {
 	if v.Type == "BOOL" && typeEqual {
 		return
+	}
+}
+
+func validateFile(v *FieldDto, typeEqual bool, fieldFromBody any, errors *ErrorList, index string) {
+	if v.Type == "MULTIPART_FILE" && typeEqual {
+		cField, ok := fieldFromBody.(map[string][]*multipart.FileHeader)
+		if !ok {
+			addError(errors, index, "Type mismatch should be files but got something else")
+		}
+		if v.Body != nil {
+			for _, v := range v.Body {
+				if cField[v.Name] == nil {
+					addError(errors, index, fmt.Sprintf("File with name %s is not exists", v.Name))
+				}
+			}
+		}
+	}
+
+	if v.Type == "MULTIPART_VALUES" {
+		cField, ok := fieldFromBody.(map[string][]string)
+		if !ok {
+			addError(errors, index, "Type mismatch should be strings but got something else")
+		}
+		if v.Body != nil {
+			for _, v := range v.Body {
+				if cField[v.Name] == nil {
+					addError(errors, index, fmt.Sprintf("Value with name %s is not exists", v.Name))
+				}
+			}
+		}
 	}
 }

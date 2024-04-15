@@ -7,12 +7,16 @@ import (
 
 type IFilesHandler interface {
 	base.IHandler
-	AliveHandler(context *gin.Context)
+	base.CRUDOps
 }
 
 func FilesRoute(engine *gin.Engine, handler IFilesHandler) {
 	router := engine.Group(handler.GetPath())
 	{
-		router.GET("alive", handler.AliveHandler)
+		router.GET(base.GetDetails, handler.GetSpecificHandler)
+		router.GET(base.GetList, handler.GetHandler)
+		router.POST(base.Add, handler.AddHandler)
+		router.PATCH(base.Update, handler.UpdateHandler)
+		router.DELETE(base.Delete, handler.RemoveHandler)
 	}
 }

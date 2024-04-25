@@ -12,6 +12,8 @@ type IModels interface {
 	NewTelegramIdsTable() string
 	NewUserPreferencesTable() string
 	NewFileTable() string
+	NewPostsTable() string
+	NewPostsFilesTable() string
 }
 
 func InitializeTables(wg *sync.WaitGroup, models IModels) {
@@ -24,6 +26,8 @@ func InitializeTables(wg *sync.WaitGroup, models IModels) {
 	instance.CallManualSQL(models.NewTelegramIdsTable())
 	instance.CallManualSQL(models.NewUserPreferencesTable())
 	instance.CallManualSQL(models.NewFileTable())
+	instance.CallManualSQL(models.NewPostsTable())
+	instance.CallManualSQL(models.NewPostsFilesTable())
 }
 
 func InitializeFunctions(wg *sync.WaitGroup) {

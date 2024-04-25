@@ -1,6 +1,7 @@
 package api
 
 import (
+	"errors"
 	"github.com/roflan.io/api/base"
 	api "github.com/roflan.io/api/modules/users"
 	"github.com/roflan.io/crypto"
@@ -63,6 +64,43 @@ func (repo *FilesRepository) ProcessSingleFile(userHash string, errChannel chan 
 	}
 	wg.Done()
 	errChannel <- nil
+}
+
+func (repo *FilesRepository) BulkRemoveFile(userHash string, ids []any) error {
+	updater := firestore.NewFirestoreHandler().Connect().Register(firestore.HandleRemoveFileFromBucket)
+
+	errCh := make(chan error)
+	wg.Add(len(ids))
+
+	db := pg.GDB().Instance.Table(models.FilesTable)
+
+	for k, v := range ids {
+		go func(ch chan error, value any, index int) {
+			if err := db.Where("owner_user_hash = ? AND bucket_id = ?", userHash, value).Delete(&models.FileModel{}); err.Error != nil {
+				errCh <- err.Error
+			} else {
+				if err.RowsAffected == 0 {
+					errCh <- errors.New("Invalid file")
+				}
+			}
+
+			if err := updater.Emit(map[string]any{
+				"bucketId": value,
+				"index":    index,
+			}); err != nil {
+				errCh <- err
+			}
+
+			defer wg.Done()
+			errCh <- nil
+		}(errCh, v, k)
+	}
+
+	if err := <-errCh; err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func NewFilesRepository() *FilesRepository {

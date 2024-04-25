@@ -27,7 +27,7 @@ func (handler *Handler) Connect() *Handler {
 	config := &firebase.Config{
 		StorageBucket: fmt.Sprintf("%s.appspot.com", bucketName),
 	}
-	fmt.Println(fmt.Sprintf("%s%s", wd, pathToFile))
+
 	opt := option.WithCredentialsFile(fmt.Sprintf("%s%s", wd, pathToFile))
 	app, err := firebase.NewApp(context.Background(), config, opt)
 	if err != nil {

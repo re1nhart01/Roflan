@@ -6,7 +6,8 @@ import (
 	"github.com/roflan.io/api/middleware"
 	auth "github.com/roflan.io/api/modules/auth"
 	files "github.com/roflan.io/api/modules/files"
-	messaging "github.com/roflan.io/api/modules/messaging"
+	messanger "github.com/roflan.io/api/modules/messaging"
+	posts "github.com/roflan.io/api/modules/posts"
 	root "github.com/roflan.io/api/modules/root"
 	users "github.com/roflan.io/api/modules/users"
 	"github.com/roflan.io/environment"
@@ -61,13 +62,14 @@ func (app *Application) RunDatabaseBackgroundTasks() {
 func (app *Application) BindHandlers() {
 	app.Instance.Use(middleware.BodyParserMiddlewareHandler)
 	root.RegisterHttpRootRouter(app.Instance, "")
-	messaging.RegisterWSMessagingRouter(app.Instance, app.ApiPath)
+	messanger.RegisterWSMessagingRouter(app.Instance, app.ApiPath)
 	auth.RegisterHttpAuthRouter(app.Instance, app.ApiPath)
 	app.Instance.Use(middleware.AuthMiddlewareHandler)
 	files.RegisterHttpFilesRouter(app.Instance, app.ApiPath)
 	users.RegisterHttpUsersRouter(app.Instance, app.ApiPath)
-	messaging.RegisterHttpTopicsRouter(app.Instance, app.ApiPath)
-	messaging.RegisterHttpMessageRouter(app.Instance, app.ApiPath)
+	posts.RegisterHttpPostsRouter(app.Instance, app.ApiPath)
+	messanger.RegisterHttpTopicsRouter(app.Instance, app.ApiPath)
+	messanger.RegisterHttpMessageRouter(app.Instance, app.ApiPath)
 }
 
 func (app *Application) Run(port string) error {

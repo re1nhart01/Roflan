@@ -24,3 +24,13 @@ var AddFile = &dto.FieldsMapping{
 		},
 	},
 }
+
+var RemoveFileDto = &dto.FieldsMapping{
+	"ids": &dto.FieldDto{
+		Type:      "ARRAY",
+		Required:  true,
+		Name:      "ids",
+		MaxLength: 20,
+		MinLength: 1,
+	},
+}

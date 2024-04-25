@@ -11,6 +11,7 @@ import (
 
 type IFilesRepo interface {
 	AddFile(userHash string, files []*multipart.FileHeader) error
+	BulkRemoveFile(userHash string, ids []any) error
 }
 
 type FilesHandler struct {
@@ -49,11 +50,23 @@ func (files *FilesHandler) AddHandler(context *gin.Context) {
 		}
 	}
 
-	context.String(http.StatusOK, "")
+	context.Status(http.StatusOK)
 }
 
 func (files *FilesHandler) RemoveHandler(context *gin.Context) {
-	context.JSON(200, "asd1")
+	userData, stopped := files.UnwrapUserData(context)
+	validatedData, stopped := files.Unwrap(context, RemoveFileDto)
+
+	if stopped {
+		return
+	}
+
+	if err := files.BulkRemoveFile(userData["userHash"].(string), validatedData["ids"].([]any)); err != nil {
+		context.JSON(helpers.GiveBadRequest(err.Error(), nil))
+		return
+	}
+
+	context.JSON(helpers.GiveOkResponse())
 }
 
 func (files *FilesHandler) UpdateHandler(context *gin.Context) {

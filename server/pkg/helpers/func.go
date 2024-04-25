@@ -28,6 +28,20 @@ func Includes[T comparable](list []T, item T) (bool, T, int) {
 	return false, item, -1
 }
 
+func ForEachOrError[T comparable](list []T, callback func(item T, index int, list []T) error) error {
+	if len(list) == 0 {
+		return nil
+	}
+
+	for k, v := range list {
+		if err := callback(v, k, list); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func GetIntListFromModel(list listOf) []int {
 	result := []int{}
 	for _, v := range list {

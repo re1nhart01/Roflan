@@ -15,7 +15,7 @@ func (m *Models) NewFileTable() string {
 	    %s
 		file_name VARCHAR(250) NOT NULL,
 		owner_user_hash VARCHAR(500) NOT NULL REFERENCES %s(user_hash) ON DELETE CASCADE,
-		bucket_id VARCHAR(500) NOT NULL
+		bucket_id VARCHAR(500) NOT NULL UNIQUE
 		)
 `, FilesTable, NewBaseModels(), UsersTable)
 }

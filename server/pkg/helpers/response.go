@@ -1,6 +1,9 @@
 package helpers
 
-import "net/http"
+import (
+	"github.com/roflan.io/paginator"
+	"net/http"
+)
 
 func GiveUnauthorized() (int, map[string]any) {
 	return http.StatusUnauthorized, map[string]any{
@@ -49,4 +52,10 @@ func GiveOkResponseWithData(data any) (int, map[string]any) {
 		"message":    "Ok!",
 		"response":   data,
 	}
+}
+
+func GiveOkPaginatedResponse(data paginator.ObjectPaginator) (int, paginator.ObjectPaginator) {
+	data.Message = "Ok"
+	data.StatusCode = 200
+	return http.StatusOK, data
 }

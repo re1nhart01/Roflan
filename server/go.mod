@@ -28,6 +28,8 @@ replace github.com/roflan.io/pseudo => ./pkg/pseudo
 
 replace github.com/roflan.io/socket => ./pkg/socket
 
+replace github.com/roflan.io/paginator => ./pkg/paginator
+
 replace github.com/roflan.io/fs => ./pkg/fs
 
 require (

@@ -16,5 +16,6 @@ use (
 	 ./pkg/pseudo
 	 ./pkg/socket
 	 ./pkg/fs
+	./pkg/paginator
 	.
 )

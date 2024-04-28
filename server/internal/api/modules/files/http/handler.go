@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/roflan.io/api/base"
 	"github.com/roflan.io/helpers"
+	"github.com/roflan.io/paginator"
 	"mime/multipart"
 	"net/http"
 )
@@ -12,6 +13,7 @@ import (
 type IFilesRepo interface {
 	AddFile(userHash string, files []*multipart.FileHeader) error
 	BulkRemoveFile(userHash string, ids []any) error
+	BulkGetFiles(userHash string, queries map[string][]string) (paginator.ObjectPaginator, error)
 }
 
 type FilesHandler struct {
@@ -28,11 +30,19 @@ func (files *FilesHandler) GetPath() string {
 }
 
 func (files *FilesHandler) GetHandler(context *gin.Context) {
-	context.JSON(200, "asd33")
+	userData, stopped := files.UnwrapUserData(context)
+	if stopped {
+		return
+	}
+	if data, err := files.BulkGetFiles(userData["userHash"].(string), context.Request.URL.Query()); err != nil {
+		context.JSON(helpers.GiveBadRequest(err.Error(), nil))
+	} else {
+		context.JSON(helpers.GiveOkPaginatedResponse(data))
+	}
 }
 
 func (files *FilesHandler) GetSpecificHandler(context *gin.Context) {
-	context.JSON(200, "asd23")
+	context.JSON(200, "asd33")
 }
 
 func (files *FilesHandler) AddHandler(context *gin.Context) {

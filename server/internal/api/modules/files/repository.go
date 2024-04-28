@@ -2,6 +2,7 @@ package api
 
 import (
 	"errors"
+	"fmt"
 	"github.com/roflan.io/api/base"
 	api "github.com/roflan.io/api/modules/users"
 	"github.com/roflan.io/crypto"
@@ -9,6 +10,7 @@ import (
 	"github.com/roflan.io/external/firestore"
 	"github.com/roflan.io/helpers"
 	"github.com/roflan.io/models"
+	"github.com/roflan.io/paginator"
 	"github.com/roflan.io/pg"
 	"mime/multipart"
 	"strconv"
@@ -39,6 +41,20 @@ func (repo *FilesRepository) AddFile(userHash string, files []*multipart.FileHea
 	}
 	wg.Wait()
 	return <-errCh
+}
+
+func (repo *FilesRepository) BulkGetFiles(userHash string, queries map[string][]string) (paginator.ObjectPaginator, error) {
+	result := paginator.ObjectPaginator{
+		Response: &paginator.Response{},
+	}
+
+	pager := paginator.NewPaginator()
+
+	if err := pager.STable(models.FilesTable).Pick(queries).SUser(fmt.Sprintf("owner_user_hash = '%s'", userHash)).Ignite(&result); err != nil {
+		return result, err
+	}
+
+	return result, nil
 }
 
 func (repo *FilesRepository) ProcessSingleFile(userHash string, errChannel chan error, file *multipart.FileHeader, updater *firestore.Handler) {

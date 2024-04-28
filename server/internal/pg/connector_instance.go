@@ -5,6 +5,10 @@ import (
 	"github.com/roflan.io/environment"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
+	"log"
+	"os"
+	"time"
 )
 
 type IConnector interface {
@@ -47,8 +51,21 @@ func ConnectToDatabase(isCreatedDatabase bool) error {
 		false: environment.GEnv().GetVariable("DB_NAME_DEFAULT"),
 	}[isCreatedDatabase]
 
+	newLogger := logger.New(
+		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
+		logger.Config{
+			SlowThreshold:             time.Second, // Slow SQL threshold
+			LogLevel:                  logger.Info, // Log level
+			IgnoreRecordNotFoundError: true,        // Ignore ErrRecordNotFound error for logger
+			ParameterizedQueries:      true,        // Don't include params in the SQL log
+			Colorful:                  false,       // Disable color
+		},
+	)
+
 	dsn := fmt.Sprintf("host=%s user=%s password=%s port=%s dbname=%s", c.host, c.username, c.pass, c.port, c.dbname)
-	apt.Instance, _ = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	apt.Instance, _ = gorm.Open(postgres.Open(dsn), &gorm.Config{
+		Logger: newLogger,
+	})
 	if apt.Instance.Error != nil {
 		fmt.Println("something went wrong with db")
 		return apt.Instance.Error

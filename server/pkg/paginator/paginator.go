@@ -163,13 +163,14 @@ func (pag *Paginator) fromContextWhere(querystring string) string {
 	queries := strings.Split(querystring, "|")
 
 	for k, v := range queries {
-		splicedChunk := strings.Split(strings.ReplaceAll(strings.ReplaceAll(v, "[", " "), "]", ""), " ")
+		splicedChunk := strings.Split(
+			strings.ReplaceAll(
+				strings.ReplaceAll(
+					v, "[", " "), "]", ""), " ")
 
 		if len(splicedChunk) > 1 {
-			if len(splicedChunk[1]) > 1 {
+			if len(splicedChunk[1]) >= 1 {
 				resultedQuery += accumulateOr(splicedChunk[0], strings.Split(splicedChunk[1], "^"))
-			} else if len(splicedChunk[1]) == 1 {
-				resultedQuery += fmt.Sprintf("%s = %s", splicedChunk[0], string(splicedChunk[1][0]))
 			}
 			if k < len(queries)-1 {
 				resultedQuery += " AND "

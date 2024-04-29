@@ -51,7 +51,7 @@ func ConnectToDatabase(isCreatedDatabase bool) error {
 		false: environment.GEnv().GetVariable("DB_NAME_DEFAULT"),
 	}[isCreatedDatabase]
 
-	logger.New(
+	newLogger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
 		logger.Config{
 			SlowThreshold:             time.Second, // Slow SQL threshold
@@ -64,7 +64,7 @@ func ConnectToDatabase(isCreatedDatabase bool) error {
 
 	dsn := fmt.Sprintf("host=%s user=%s password=%s port=%s dbname=%s", c.host, c.username, c.pass, c.port, c.dbname)
 	apt.Instance, _ = gorm.Open(postgres.Open(dsn), &gorm.Config{
-		//Logger: newLogger,
+		Logger: newLogger,
 	})
 	if apt.Instance.Error != nil {
 		fmt.Println("something went wrong with db")

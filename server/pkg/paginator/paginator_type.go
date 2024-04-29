@@ -21,3 +21,9 @@ type ConfigPaginator struct {
 	WithSort       bool
 	WithWhere      bool
 }
+
+func NewObjectPaginator() ObjectPaginator {
+	return ObjectPaginator{
+		Response: &Response{},
+	}
+}

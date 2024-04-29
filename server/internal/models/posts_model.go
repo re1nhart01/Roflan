@@ -9,6 +9,14 @@ type PostsModel struct {
 	PostId      string `json:"post_id"`
 }
 
+type PostsModelFull struct {
+	*BaseModel
+	UserHashId  string                 `json:"user_hash_id"`
+	ContentText string                 `json:"content_text"`
+	PostId      string                 `json:"post_id"`
+	Files       []*PostsFilesFullModel `json:"files,omitempty"`
+}
+
 func (m *Models) NewPostsTable() string {
 	return fmt.Sprintf(`
 		CREATE TABLE IF NOT EXISTS %s (

@@ -44,13 +44,15 @@ func (repo *FilesRepository) AddFile(userHash string, files []*multipart.FileHea
 }
 
 func (repo *FilesRepository) BulkGetFiles(userHash string, queries map[string][]string) (paginator.ObjectPaginator, error) {
-	result := paginator.ObjectPaginator{
-		Response: &paginator.Response{},
-	}
+	result := paginator.NewObjectPaginator()
 
 	pager := paginator.NewPaginator()
 
-	if err := pager.STable(models.FilesTable).Pick(queries).SUser(fmt.Sprintf("owner_user_hash = '%s'", userHash)).Ignite(&result); err != nil {
+	if err := pager.
+		STable(models.FilesTable).
+		Pick(queries).
+		SUser(fmt.Sprintf("owner_user_hash = '%s'", userHash)).
+		Ignite(&result); err != nil {
 		return result, err
 	}
 

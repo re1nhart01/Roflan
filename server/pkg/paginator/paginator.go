@@ -1,8 +1,10 @@
 package paginator
 
 import (
+	"errors"
 	"fmt"
 	"github.com/roflan.io/pg"
+	"gorm.io/gorm"
 	"math"
 	"strconv"
 	"strings"
@@ -10,13 +12,13 @@ import (
 
 type Paginator struct {
 	Config         ConfigPaginator
-	db             pg.DatabaseInstance
 	Table          string
 	Limit          int
 	Page           int
 	Order          string
 	Where          string
 	UserData       string
+	Join           string
 	AcceptedFilter []string
 }
 
@@ -36,6 +38,11 @@ func (pag *Paginator) Configure(config ConfigPaginator) *Paginator {
 
 func (pag *Paginator) SPage(page int) *Paginator {
 	pag.Page = page
+	return pag
+}
+
+func (pag *Paginator) SJoin(joinq string) *Paginator {
+	pag.Join = joinq
 	return pag
 }
 
@@ -115,6 +122,9 @@ func (pag *Paginator) Ignite(obj *ObjectPaginator) error {
 	if pag.Limit != 0 {
 		q.Limit(pag.Limit)
 	}
+	if pag.Join != "" {
+		q.Joins(pag.Join)
+	}
 
 	if countAll := q.Count(countResponse); countAll.Error != nil {
 		return countAll.Error
@@ -179,6 +189,22 @@ func (pag *Paginator) fromContextWhere(querystring string) string {
 
 	}
 	return resultedQuery
+}
+
+func MergeTo[T any](obj *ObjectPaginator, toField string, functor func(item map[string]any, tx *gorm.DB) *gorm.DB) error {
+	if obj.Data == nil || len(obj.Data) <= 0 || obj.Data[0][toField] != nil {
+		return errors.New("list is invalid")
+	}
+
+	for _, v := range obj.Data {
+		var result T
+		if tx := functor(v, pg.GDB().Instance).Scan(&result); tx.Error != nil {
+			return tx.Error
+		}
+
+		v[toField] = result
+	}
+	return nil
 }
 
 func accumulateOr(k string, list []string) string {

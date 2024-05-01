@@ -5,9 +5,13 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/roflan.io/api/base"
 	"github.com/roflan.io/helpers"
+	. "github.com/roflan.io/helpers"
+	"github.com/roflan.io/paginator"
 )
 
 type ITopicsRepo interface {
+	GetBulkTopics(userHash string, queries map[string][]string) (paginator.ObjectPaginator, error)
+	CreateOrReceiveTopic(userHash, name string, isSingle bool, avatarBucket string, userIds []any) (map[string]any, error)
 }
 
 type TopicsHttpHandler struct {
@@ -16,7 +20,15 @@ type TopicsHttpHandler struct {
 }
 
 func (topics *TopicsHttpHandler) GetHandler(context *gin.Context) {
-	context.JSON(helpers.GiveOkResponse())
+	userData, stopped := topics.UnwrapUserData(context)
+	if stopped {
+		return
+	}
+	if data, err := topics.GetBulkTopics(userData["userHash"].(string), context.Request.URL.Query()); err != nil {
+		context.JSON(helpers.GiveBadRequest(err.Error(), nil))
+	} else {
+		context.JSON(helpers.GiveOkPaginatedResponse(data))
+	}
 }
 
 func (topics *TopicsHttpHandler) GetSpecificHandler(context *gin.Context) {
@@ -24,7 +36,23 @@ func (topics *TopicsHttpHandler) GetSpecificHandler(context *gin.Context) {
 }
 
 func (topics *TopicsHttpHandler) AddHandler(context *gin.Context) {
-	context.JSON(helpers.GiveOkResponse())
+	userData, stopped := topics.UnwrapUserData(context)
+	validatedData, stopped := topics.Unwrap(context, AddTopicDto)
+	if stopped {
+		return
+	}
+
+	userHash := S(userData["userHash"])
+	chatName := S(validatedData["name"])
+	isSingle := F[bool](validatedData["isSingle"])
+	avatarBucket := S(validatedData["avatarBucket"])
+	userIds := F[[]any](validatedData["userIds"])
+
+	if data, err := topics.CreateOrReceiveTopic(userHash, chatName, isSingle, avatarBucket, userIds); err != nil {
+		context.JSON(helpers.GiveBadRequest(err.Error(), nil))
+	} else {
+		context.JSON(helpers.GiveOkResponseWithData(data))
+	}
 }
 
 func (topics *TopicsHttpHandler) RemoveHandler(context *gin.Context) {

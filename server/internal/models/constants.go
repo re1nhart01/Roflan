@@ -8,6 +8,9 @@ const (
 	FilesTable           = "files"
 	PostsTable           = "posts"
 	PostsFilesTable      = "posts_files"
+	LinkUsers            = "link_users"
+	TopicsTable          = "topics"
+	TopicUsersTable      = "topic_users"
 )
 
 const SexTuples = `('male', 'female', 'other')`

@@ -157,3 +157,30 @@ func ParseByteToMap(data []byte) map[string]any {
 	}
 	return result
 }
+
+func S(value any) string {
+	if value == nil {
+		return ""
+	}
+	return value.(string)
+}
+
+func F[T any](value any) T {
+	var val T
+	if value == nil {
+		return val
+	}
+	return value.(T)
+}
+
+func AnyToStringSlice(anySlice []any) []string {
+	stringSlice := make([]string, len(anySlice))
+	for i, v := range anySlice {
+		str, ok := v.(string)
+		if !ok {
+			return []string{}
+		}
+		stringSlice[i] = str
+	}
+	return stringSlice
+}

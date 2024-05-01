@@ -192,7 +192,10 @@ func (pag *Paginator) fromContextWhere(querystring string) string {
 }
 
 func MergeTo[T any](obj *ObjectPaginator, toField string, functor func(item map[string]any, tx *gorm.DB) *gorm.DB) error {
-	if obj.Data == nil || len(obj.Data) <= 0 || obj.Data[0][toField] != nil {
+	if len(obj.Data) <= 0 {
+		return nil
+	}
+	if obj.Data == nil || obj.Data[0][toField] != nil {
 		return errors.New("list is invalid")
 	}
 

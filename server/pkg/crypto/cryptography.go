@@ -2,8 +2,11 @@ package crypto
 
 import (
 	"crypto/sha1"
+	"encoding/base64"
 	"fmt"
 	"golang.org/x/crypto/bcrypt"
+	"slices"
+	"strings"
 )
 
 const HashingCycles int = 6
@@ -33,4 +36,10 @@ func MakePasswordHash(serverHash string, salt string) string {
 	pwd.Write([]byte(serverHash))
 	pwd.Write([]byte(salt))
 	return fmt.Sprintf("%x", pwd.Sum(nil))
+}
+
+func GenerateRecreatableString(fStr []string) string {
+	slices.Sort(fStr)
+	joined := strings.Join(fStr, "@")
+	return base64.StdEncoding.EncodeToString([]byte(joined))
 }

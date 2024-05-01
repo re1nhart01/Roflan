@@ -40,6 +40,14 @@ func (user *UserHttpHandler) GetMyProfile(context *gin.Context) {
 	context.JSON(helpers.GiveOkResponseWithData(userData))
 }
 
+func (user *UserHttpHandler) UpdatePreferences(context *gin.Context) {
+
+}
+
+func (user *UserHttpHandler) UpdateUserFields(context *gin.Context) {
+
+}
+
 func (user *UserHttpHandler) AliveHandler(context *gin.Context) {
 	context.JSON(200, map[string]any{
 		"alive": true,

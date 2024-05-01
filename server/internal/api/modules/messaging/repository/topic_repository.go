@@ -83,8 +83,8 @@ func (repo *TopicsRepository) CreateOrReceiveTopic(userHash, name string, isSing
 	}
 	fullUsersList := append(helpers.AnyToStringSlice(userIds), userHash)
 	computedHash := crypto.MakePasswordHash(crypto.GenerateRecreatableString(fullUsersList), map[bool]string{
-		true:  "",
 		false: base64.StdEncoding.EncodeToString([]byte(time.Now().String())),
+		true:  "",
 	}[isSingle])
 
 	topic := models.TopicsModel{

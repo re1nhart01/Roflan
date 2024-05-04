@@ -28,6 +28,18 @@ func Includes[T comparable](list []T, item T) (bool, T, int) {
 	return false, item, -1
 }
 
+func IncludesBool[T comparable](list []T, item T) bool {
+	if len(list) == 0 {
+		return false
+	}
+	for _, v := range list {
+		if v == item {
+			return true
+		}
+	}
+	return false
+}
+
 func ForEachOrError[T comparable](list []T, callback func(item T, index int, list []T) error) error {
 	if len(list) == 0 {
 		return nil

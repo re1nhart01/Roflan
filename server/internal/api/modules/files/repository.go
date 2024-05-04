@@ -51,6 +51,7 @@ func (repo *FilesRepository) BulkGetFiles(userHash string, queries map[string][]
 	if err := pager.
 		STable(models.FilesTable).
 		Pick(queries).
+		SAcceptedFilter([]string{"id"}).
 		SUser(fmt.Sprintf("owner_user_hash = '%s'", userHash)).
 		Ignite(&result); err != nil {
 		return result, err

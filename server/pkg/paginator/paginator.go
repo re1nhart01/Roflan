@@ -10,6 +10,8 @@ import (
 	"strings"
 )
 
+type functorFunc func(item map[string]any, tx *gorm.DB) *gorm.DB
+
 type Paginator struct {
 	Config         ConfigPaginator
 	Table          string
@@ -20,6 +22,7 @@ type Paginator struct {
 	UserData       string
 	Join           string
 	AcceptedFilter []string
+	Preloads       [][]interface{}
 }
 
 const (
@@ -64,7 +67,6 @@ func (pag *Paginator) SOrder(orderq string) *Paginator {
 
 func (pag *Paginator) SWhere(request string) *Paginator {
 	pag.Where = pag.fromContextWhere(request)
-	fmt.Println(pag.Where)
 	return pag
 }
 
@@ -75,6 +77,11 @@ func (pag *Paginator) SAcceptedFilter(listing []string) *Paginator {
 
 func (pag *Paginator) STable(table string) *Paginator {
 	pag.Table = table
+	return pag
+}
+
+func (pag *Paginator) SPreloads(preloads [][]interface{}) *Paginator {
+	pag.Preloads = preloads
 	return pag
 }
 
@@ -124,6 +131,12 @@ func (pag *Paginator) Ignite(obj *ObjectPaginator) error {
 	}
 	if pag.Join != "" {
 		q.Joins(pag.Join)
+	}
+
+	if len(pag.Preloads) > 0 {
+		for _, v := range pag.Preloads {
+			q.Preload(v[0].(string), v[1:]...)
+		}
 	}
 
 	if countAll := q.Count(countResponse); countAll.Error != nil {
@@ -178,6 +191,9 @@ func (pag *Paginator) fromContextWhere(querystring string) string {
 				strings.ReplaceAll(
 					v, "[", " "), "]", ""), " ")
 
+		if len(pag.AcceptedFilter) > 0 && !includesBool(pag.AcceptedFilter, splicedChunk[0]) {
+			continue
+		}
 		if len(splicedChunk) > 1 {
 			if len(splicedChunk[1]) >= 1 {
 				resultedQuery += accumulateOr(splicedChunk[0], strings.Split(splicedChunk[1], "^"))
@@ -191,7 +207,7 @@ func (pag *Paginator) fromContextWhere(querystring string) string {
 	return resultedQuery
 }
 
-func MergeTo[T any](obj *ObjectPaginator, toField string, functor func(item map[string]any, tx *gorm.DB) *gorm.DB) error {
+func MergeTo[T any](obj *ObjectPaginator, toField string, functor functorFunc) error {
 	if len(obj.Data) <= 0 {
 		return nil
 	}
@@ -219,6 +235,18 @@ func accumulateOr(k string, list []string) string {
 		}
 	}
 	return result
+}
+
+func includesBool[T comparable](list []T, item T) bool {
+	if len(list) == 0 {
+		return false
+	}
+	for _, v := range list {
+		if v == item {
+			return true
+		}
+	}
+	return false
 }
 
 func NewPaginator() *Paginator {

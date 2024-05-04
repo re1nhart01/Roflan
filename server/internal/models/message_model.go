@@ -13,12 +13,14 @@ type MessageModel struct {
 
 type MessageModelFull struct {
 	*BaseModel
-	UserHashId  string           `json:"user_hash_id"`
-	TopicHashId string           `json:"topic_hash_id"`
-	Body        string           `json:"body"`
-	MessageId   string           `json:"message_id"`
-	WithMedia   bool             `json:"with_media"`
-	Media       []map[string]any `json:"media,omitempty" gorm:"embedded"`
+	UserHashId    string           `json:"user_hash_id"`
+	TopicHashId   string           `json:"topic_hash_id"`
+	Body          string           `json:"body"`
+	MessageId     string           `json:"message_id"`
+	WithMedia     bool             `json:"with_media"`
+	Media         []map[string]any `json:"media,omitempty" gorm:"embedded"`
+	UserOwner     map[string]any   `json:"user_owner" gorm:"embedded"`
+	MessageStatus int              `json:"message_status"`
 }
 
 func (m *Models) NewMessagesTable() string {

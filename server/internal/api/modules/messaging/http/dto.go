@@ -31,3 +31,27 @@ var AddTopicDto = &dto.FieldsMapping{
 		Name:      "userIds",
 	},
 }
+
+var AddMessageDto = &dto.FieldsMapping{
+	"topicHash": &dto.FieldDto{
+		Type:     "STRING",
+		Required: true,
+		Min:      5,
+		Max:      250,
+		Name:     "topicHash",
+	},
+	"body": &dto.FieldDto{
+		Type:     "STRING",
+		Required: true,
+		Min:      0,
+		Max:      5000,
+		Name:     "body",
+	},
+	"mediaIds": &dto.FieldDto{
+		Type:      "ARRAY",
+		Required:  true,
+		MinLength: 0,
+		MaxLength: 10,
+		Name:      "mediaIds",
+	},
+}

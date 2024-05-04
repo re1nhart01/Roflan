@@ -5,9 +5,14 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/roflan.io/api/base"
 	"github.com/roflan.io/helpers"
+	. "github.com/roflan.io/helpers"
+	"github.com/roflan.io/models"
+	"github.com/roflan.io/paginator"
 )
 
 type IMessageRepo interface {
+	AddMessage(userHash, topicHash, body string, mediaIds []string) (*models.MessageModelFull, error)
+	BulkReadMessages(queries map[string][]string) (paginator.ObjectPaginator, error)
 }
 
 type MessageHttpHandler struct {
@@ -16,7 +21,13 @@ type MessageHttpHandler struct {
 }
 
 func (message *MessageHttpHandler) GetHandler(context *gin.Context) {
-	context.JSON(helpers.GiveOkResponse())
+	query := context.Request.URL.Query()
+
+	if data, err := message.BulkReadMessages(query); err != nil {
+		context.JSON(helpers.GiveBadRequest(err.Error(), nil))
+	} else {
+		context.JSON(helpers.GiveOkPaginatedResponse(data))
+	}
 }
 
 func (message *MessageHttpHandler) GetSpecificHandler(context *gin.Context) {
@@ -24,7 +35,22 @@ func (message *MessageHttpHandler) GetSpecificHandler(context *gin.Context) {
 }
 
 func (message *MessageHttpHandler) AddHandler(context *gin.Context) {
-	context.JSON(helpers.GiveOkResponse())
+	userData, stopped := message.UnwrapUserData(context)
+	validatedBody, stopped := message.Unwrap(context, AddMessageDto)
+	if stopped {
+		return
+	}
+
+	userHash := S(userData["userHash"])
+	topicHash := S(validatedBody["topicHash"])
+	body := S(validatedBody["body"])
+	mediaIds := AnyToStringSlice(F[[]any](validatedBody["mediaIds"]))
+
+	if data, err := message.AddMessage(userHash, topicHash, body, mediaIds); err != nil {
+		context.JSON(GiveBadRequest(err.Error(), nil))
+	} else {
+		context.JSON(GiveOkResponseWithData(*data))
+	}
 }
 
 func (message *MessageHttpHandler) RemoveHandler(context *gin.Context) {

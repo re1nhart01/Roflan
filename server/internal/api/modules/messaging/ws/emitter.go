@@ -9,6 +9,16 @@ import (
 type SocketEmitter struct {
 }
 
+const (
+	sendMessage         = "SendMessage"
+	connect             = "Connect"
+	closeConn           = "Close"
+	readAllMessage      = "ReadAllMessages"
+	addedMessage        = "AddedMessage"
+	removeOneMessage    = "RemoveOneMessage"
+	removeBunchMessages = "RemoveBunchMessages"
+)
+
 func (emitter *SocketEmitter) EmitByEvent(client *socket.SocketClient, message *socket.SocketMessage) error {
 
 	fmt.Println(helpers.ParseByteToMap(message.Message))

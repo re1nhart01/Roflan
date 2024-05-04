@@ -11,6 +11,8 @@ const (
 	LinkUsers            = "link_users"
 	TopicsTable          = "topics"
 	TopicUsersTable      = "topic_users"
+	MessagesTable        = "messages"
+	MessagesMediaTable   = "messages_media"
 )
 
 const SexTuples = `('male', 'female', 'other')`

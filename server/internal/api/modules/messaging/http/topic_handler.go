@@ -12,6 +12,7 @@ import (
 type ITopicsRepo interface {
 	GetBulkTopics(userHash string, queries map[string][]string) (paginator.ObjectPaginator, error)
 	CreateOrReceiveTopic(userHash, name string, isSingle bool, avatarBucket string, userIds []any) (map[string]any, error)
+	GetTopic(topicHash string) (map[string]any, error)
 }
 
 type TopicsHttpHandler struct {
@@ -32,7 +33,16 @@ func (topics *TopicsHttpHandler) GetHandler(context *gin.Context) {
 }
 
 func (topics *TopicsHttpHandler) GetSpecificHandler(context *gin.Context) {
-	context.JSON(helpers.GiveOkResponse())
+	topicHash := context.Param("id")
+	if len(topicHash) < 10 {
+		context.JSON(GiveBadRequest("Invalid topic hash", nil))
+		return
+	}
+	if data, err := topics.GetTopic(topicHash); err != nil {
+		context.JSON(GiveBadRequest(err.Error(), nil))
+	} else {
+		context.JSON(GiveOkResponseWithData(data))
+	}
 }
 
 func (topics *TopicsHttpHandler) AddHandler(context *gin.Context) {

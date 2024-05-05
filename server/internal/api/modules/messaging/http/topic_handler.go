@@ -70,7 +70,7 @@ func (topics *TopicsHttpHandler) RemoveHandler(context *gin.Context) {
 }
 
 func (topics *TopicsHttpHandler) UpdateHandler(context *gin.Context) {
-	context.JSON(helpers.GiveOkResponse())
+
 }
 
 func (topics *TopicsHttpHandler) GetPath() string {

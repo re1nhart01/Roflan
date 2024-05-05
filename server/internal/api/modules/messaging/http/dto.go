@@ -55,3 +55,35 @@ var AddMessageDto = &dto.FieldsMapping{
 		Name:      "mediaIds",
 	},
 }
+
+var UpdateTopicDto = &dto.FieldsMapping{
+	"topicHash": &dto.FieldDto{
+		Type:     "STRING",
+		Required: true,
+		Min:      5,
+		Max:      250,
+		Name:     "topicHash",
+	},
+	"userIds": &dto.FieldDto{
+		Type:      "ARRAY",
+		Required:  true,
+		MinLength: 0,
+		MaxLength: 50,
+		Name:      "userIds",
+	},
+	"name": &dto.FieldDto{
+		Type:         "STRING",
+		Required:     true,
+		Min:          5,
+		Max:          80,
+		DefaultValue: "New Chat",
+		Name:         "name",
+	},
+	"avatarBucket": &dto.FieldDto{
+		Type:     "STRING",
+		Required: true,
+		Min:      5,
+		Max:      250,
+		Name:     "avatarBucket",
+	},
+}

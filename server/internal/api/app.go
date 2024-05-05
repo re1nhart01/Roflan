@@ -14,6 +14,7 @@ import (
 	"github.com/roflan.io/external/telegram"
 	"github.com/roflan.io/models"
 	"github.com/roflan.io/pg"
+	"github.com/roflan.io/socket"
 	"log"
 	"net/http"
 	"os"
@@ -48,6 +49,10 @@ func NewApp(withLogger bool) *Application {
 	return inst
 }
 
+func (app *Application) BindSocket() {
+	socket.NewHub()
+}
+
 func (app *Application) RunDatabaseBackgroundTasks() {
 	var wg sync.WaitGroup
 	wg.Add(2)
@@ -74,6 +79,7 @@ func (app *Application) BindHandlers() {
 
 func (app *Application) Run(port string) error {
 
+	app.BindSocket()
 	app.BindHandlers()
 
 	httpServer := &http.Server{

@@ -59,3 +59,10 @@ func GiveOkPaginatedResponse(data paginator.ObjectPaginator) (int, paginator.Obj
 	data.StatusCode = 200
 	return http.StatusOK, data
 }
+
+func GiveSocketMessage(tip string, data any) map[string]any {
+	return map[string]any{
+		"type": tip,
+		"data": data,
+	}
+}

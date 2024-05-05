@@ -1,6 +1,8 @@
 package socket
 
-import "github.com/gorilla/websocket"
+import (
+	"github.com/gorilla/websocket"
+)
 
 type SocketClient struct {
 	Connector *websocket.Conn
@@ -63,6 +65,25 @@ func (hub Hub) GetClient(topicId string, userHash string) *SocketClient {
 	}
 
 	return hub[topicId][userHash]
+}
+
+func (hub Hub) GetRoom(topicId string) map[string]*SocketClient {
+	if hub[topicId] == nil {
+		return nil
+	}
+
+	return hub[topicId]
+}
+func (hub Hub) BroadcastTo(message *SocketMessage, clientList map[string]*SocketClient, initiatorHash string, toSelf bool) error {
+	for k, v := range clientList {
+		if !toSelf && initiatorHash == k {
+			continue
+		}
+		if err := v.WriteMessage(message.MessageType, message.Message); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (ownClient *SocketClient) WriteMessage(messageType int, data []byte) error {

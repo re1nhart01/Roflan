@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"errors"
 	"github.com/roflan.io/api/base"
 	"github.com/roflan.io/crypto"
 	"github.com/roflan.io/environment"
@@ -9,15 +10,12 @@ import (
 	"github.com/roflan.io/paginator"
 	"github.com/roflan.io/pg"
 	"gorm.io/gorm"
-	"sync"
 	"time"
 )
 
 type MessageRepository struct {
 	*base.Repository
 }
-
-var wg *sync.WaitGroup
 
 // status 0 - помилка
 // status 1 - відправлено
@@ -83,17 +81,32 @@ func (repo *MessageRepository) AddMessage(userHash, topicHash, body string, medi
 		environment.GEnv().GetVariable("SERVER_KEY"),
 	)
 
+	messageModel := models.MessageModel{
+		UserHashId:    userHash,
+		TopicHashId:   topicHash,
+		MessageId:     messageId,
+		Body:          body,
+		WithMedia:     len(mediaIds) > 0,
+		MessageStatus: DeliveredMessageStatus,
+	}
+
 	echoModel := models.MessageModelFull{
-		BaseModel:   nil,
-		UserHashId:  userHash,
-		TopicHashId: topicHash,
-		Body:        body,
-		MessageId:   messageId,
-		WithMedia:   len(mediaIds) > 0,
+		BaseModel:     nil,
+		UserHashId:    userHash,
+		TopicHashId:   topicHash,
+		Body:          body,
+		MessageId:     messageId,
+		WithMedia:     len(mediaIds) > 0,
+		MessageStatus: DeliveredMessageStatus,
+		Media:         make([]map[string]any, 0),
+		UserOwner:     map[string]any{},
 	}
 
 	if err := pg.GDB().Instance.Transaction(func(tx *gorm.DB) error {
-		if payload := tx.Table(models.MessagesTable).Create(&echoModel); payload.Error != nil {
+		if isSub := repo.IsSubscribedOnTopic(topicHash, userHash); !isSub {
+			return errors.New("this user is not subscribed on specific topic")
+		}
+		if payload := tx.Table(models.MessagesTable).Create(&messageModel); payload.Error != nil {
 			return payload.Error
 		}
 
@@ -127,6 +140,40 @@ func (repo *MessageRepository) AddMessage(userHash, topicHash, body string, medi
 	}
 
 	return &echoModel, nil
+}
+
+func (repo *MessageRepository) IsSubscribedOnTopic(topicHash, userHash string) bool {
+	payload := pg.GDB().Instance.Table(models.TopicUsersTable).Where("topic_hash_id = ? AND user_hash_id = ?", topicHash, userHash).Count(new(int64))
+
+	return payload.RowsAffected > 0
+}
+
+func (repo *MessageRepository) BulkSetMessageStatus(topicHashId string, status int) error {
+	if payload := pg.
+		GDB().
+		Instance.
+		Table(models.MessagesTable).
+		Where("topic_hash_id = ?", topicHashId).
+		Update("message_status", status); payload.Error != nil {
+		return payload.Error
+	}
+	return nil
+}
+
+func (repo *MessageRepository) GetLastMessage(topicHashId string) (*models.MessageModelFull, error) {
+	result := &models.MessageModelFull{}
+
+	if payload := pg.
+		GDB().
+		Instance.
+		Table(models.MessagesTable).
+		Where("topic_hash_id = ?", topicHashId).
+		Order("id desc").Limit(1).
+		Take(&result); payload.Error != nil {
+		return result, payload.Error
+	}
+
+	return result, nil
 }
 
 func NewMessageRepository() *MessageRepository {

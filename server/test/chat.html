@@ -7,6 +7,11 @@
     <script>
         let websocket = null;
 
+        //eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2hhc2giOiIxODc1MWNhYTYyMWEyNDU2M2IwMDRjMjBjNGIxNjNkNmMwNDRkZWM2IiwiaWQiOjgsInRva2VuX3R5cGUiOiJhY2Nlc3MiLCJleHAiOjE3MTUwMzE4NDJ9.cIjFNcxmHAXQalGGs0IfjHDkqTTWoTm4I9kMPhASJDA
+        //eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2hhc2giOiI5ZmFiODRhMzQwZGM3NDVhYTc0ZTA4OTg5ODVhYTZjYzE5MGMzZWVlIiwiaWQiOjEsInRva2VuX3R5cGUiOiJhY2Nlc3MiLCJleHAiOjE3MTUwMTU1ODV9.16PtnEKA4K2TRXy6_aeW2-nbHOoGGBXCmRYdka7xlys
+        //{"type": "sendMessage", "data": { "body": "Abababa", "mediaIds": [] }}
+        //{"type": "readAllMessages", "data": { "body": "Abababa", "mediaIds": [] }}
+
         function connect() {
             const url = document.getElementById('ws-url').value;
             websocket = new WebSocket(url);
@@ -31,7 +36,7 @@
         function sendMessage() {
             if(websocket && websocket.readyState === WebSocket.OPEN) {
                 const message = document.getElementById('message').value;
-                websocket.send(JSON.stringify({msg: message}));
+                websocket.send(message);
                 showMessage('You: ' + message);
             } else {
                 alert('WebSocket is not connected.');
@@ -54,10 +59,10 @@
 </head>
 <body>
 <h2>Mini Chat via WebSocket</h2>
-<input type="text" id="ws-url" placeholder="ws://example.com/socket">
+<input style="width: 80%; height: 120px" width="100%" type="text" id="ws-url" placeholder="ws://example.com/socket">
 <button onclick="connect()">Connect</button>
 <br><br>
-<input type="text" id="message" placeholder="Type your message here...">
+<input width="100%" type="text" id="message" placeholder="Type your message here...">
 <button onclick="sendMessage()">Send</button>
 <br><br>
 <button onclick="closeSocket()">Close</button>

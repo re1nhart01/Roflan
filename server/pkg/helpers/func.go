@@ -3,6 +3,7 @@ package helpers
 import (
 	"crypto/rand"
 	"encoding/json"
+	"fmt"
 	"io"
 	"regexp"
 	"strings"
@@ -195,4 +196,12 @@ func AnyToStringSlice(anySlice []any) []string {
 		stringSlice[i] = str
 	}
 	return stringSlice
+}
+
+func WrapToBytes(value any) []byte {
+	data, err := json.Marshal(value)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return data
 }

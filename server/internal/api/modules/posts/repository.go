@@ -72,6 +72,10 @@ func (repo *PostsRepository) AddPost(userHash, contentText string, filesIds []an
 	return nil
 }
 
+func (repo *PostsRepository) RemovePost(postId string) error {
+	return nil
+}
+
 func (repo *PostsRepository) LinkFileToPost(postId, fileId string, isMain bool) error {
 	result := models.PostsFilesModel{
 		PostsPostId:     postId,

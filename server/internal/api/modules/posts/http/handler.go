@@ -47,6 +47,10 @@ func (posts *PostsHttpHandler) AddHandler(context *gin.Context) {
 }
 
 func (posts *PostsHttpHandler) RemoveHandler(context *gin.Context) {
+	userData, stopped := posts.UnwrapUserData(context)
+	if stopped {
+		return
+	}
 
 }
 

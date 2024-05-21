@@ -1,16 +1,42 @@
-import { AppRegistry } from 'react-native';
-import React from 'react';
-import { Provider } from 'react-redux';
-import { store } from '@core/redux-class';
+import {AppRegistry, LogBox, Pressable, TouchableOpacity, View} from 'react-native';
+import React, { useEffect } from 'react';
+import { StoreProvider } from 'easy-peasy';
+import { store } from '@core/store/store';
+import 'react-native-gesture-handler';
+import { NativeBaseProvider } from 'native-base';
+import { enableScreens } from 'react-native-screens';
 import { name as appName } from './app.json';
 import App from './App';
 
+enableScreens(false);
+
+Pressable.defaultProps = {
+  ...(Pressable.defaultProps || {}),
+  accessible: false,
+  focusable: false,
+};
+
+TouchableOpacity.defaultProps = {
+  ...(TouchableOpacity.defaultProps || {}),
+  accessible: false,
+  focusable: false,
+};
+
+LogBox.ignoreLogs(['In React 18, SSRProvider is not necessary and is a noop. You can remove it from your app.',
+  'All focusable views should report proper accessibility information.',
+]);
+
 const AppWithContainerStore = () => {
-  console.log(store);
+  useEffect(() => {
+
+  }, []);
+
   return (
-    <Provider store={store}>
-      <App />
-    </Provider>
+    <NativeBaseProvider>
+      <StoreProvider store={store}>
+        <App />
+      </StoreProvider>
+    </NativeBaseProvider>
   );
 };
 

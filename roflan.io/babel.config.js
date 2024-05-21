@@ -35,5 +35,12 @@ module.exports = {
       },
     ],
     ['transform-decorators-legacy'],
+    'react-native-reanimated/plugin',
+    [
+      'babel-plugin-inline-import',
+      {
+        extensions: ['.svg'],
+      },
+    ],
   ],
 };

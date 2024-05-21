@@ -1,14 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { UserStore } from '@core/redux-class/UserStore.ts';
-import { createSliceWrap } from '@core/redux-class/BaseReduxWrapper.ts';
+import { createSliceWrap, grabActions, grabReducers } from '@core/redux-class/base/functions.ts';
+import { UserStore } from '@core/storages/user/user-store.ts';
+import { IUserThunks } from '@core/storages/user/user-store.type.ts';
 
-const userStore = new UserStore();
-createSliceWrap(userStore);
+const userStore = createSliceWrap<UserStore>(new UserStore());
 
-export const userThunks = userStore.__C__();
-console.log(userThunks);
+export const userThunks = userStore.obj.collect();
 export const store = configureStore({
-  reducer: userStore.__VALUE__?.reducer!,
+  reducer: grabReducers(userStore),
 });
 
-export const actions2 = userStore.__VALUE__?.actions!;
+export const actions2 = grabActions(userStore);

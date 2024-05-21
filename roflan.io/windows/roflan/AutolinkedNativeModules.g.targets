@@ -22,5 +22,9 @@
     <ProjectReference Include="$(ProjectDir)..\..\node_modules\react-native-svg\windows\RNSVG\RNSVG.vcxproj">
       <Project>{7acf84ec-efba-4043-8e14-40b159508902}</Project>
     </ProjectReference>
+    <!-- Projects from react-native-video -->
+    <ProjectReference Include="$(ProjectDir)..\..\node_modules\react-native-video\windows\ReactNativeVideoCPP\ReactNativeVideoCPP.vcxproj">
+      <Project>{0d1e54d3-4be1-4daf-98bf-124c28c85014}</Project>
+    </ProjectReference>
   </ItemGroup>
 </Project>

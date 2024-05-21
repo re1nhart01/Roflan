@@ -2,14 +2,21 @@ package main
 
 import (
 	"fmt"
-	"reflect"
+	"github.com/roflan.io/models"
+	"github.com/roflan.io/paginator"
 )
 
 func main() {
-	fieldFromBody := 0
-	v1 := reflect.ValueOf(fieldFromBody)
-	//fmt.Println(v1.Type().String(), v1.Float())
-	fv := v1.Convert(reflect.TypeOf(float64(0)))
-	fmt.Println(fv.Type().String())
-	fmt.Println(fv.Float())
+	paginato := paginator.NewPaginator()
+	data := paginator.ObjectPaginator{}
+	paginato.STable(models.UsersTable).SOrder("a=desc|b=asc").SAcceptedFilter([]string{"a", "b"}).Pick(map[string][]string{
+		"page":  {"32"},
+		"limit": {"2"},
+		"a":     {"aba"},
+		"b":     {"bababab", "baababa"},
+		"c":     {"zxc"},
+		"d":     {"zxca123"},
+		"e":     {"ad", "ad2"},
+	}).Ignite(&data)
+	fmt.Println(&data)
 }

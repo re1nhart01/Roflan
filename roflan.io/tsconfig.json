@@ -35,7 +35,10 @@
       "@tm/*": [
         "src/tm/*"
       ]
-    }
+    },
+    "lib": ["es2016","es2021", "DOM","es2018.promise"],
+    "skipLibCheck": true,
   },
   "extends": "@react-native/typescript-config/tsconfig.json"
+
 }

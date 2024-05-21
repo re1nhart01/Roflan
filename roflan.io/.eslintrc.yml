@@ -41,6 +41,7 @@ rules:
   prefer-destructuring: off
   space-before-function-paren: 0
   react/no-unknown-property: off
+  react/destructuring-assignment: off
   react/jsx-uses-react: 2
   react/jsx-uses-vars: 2
   react/jsx-filename-extension: [1, { "extensions": [".tsx", ".ts"] }]
@@ -48,6 +49,7 @@ rules:
   react/jsx-fragments: 0
   react/require-extension: 0
   no-shadow:  off
+  no-async-promise-executor: off
   react/jsx-props-no-spreading: off
   react/forbid-prop-types: 0
   react/jsx-first-prop-new-line: [2, 'multiline']

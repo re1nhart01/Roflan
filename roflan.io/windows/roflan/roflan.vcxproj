@@ -158,6 +158,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+        <PackageReference Include="Win2D.uwp" Version="1.26.0" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ReactNativeWindowsTargets">

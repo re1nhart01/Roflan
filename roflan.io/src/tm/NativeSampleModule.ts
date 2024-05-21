@@ -5,8 +5,9 @@ export interface Spec extends TurboModule {
     add(a: number, b: number, callback: (value: number) => void) : void;
     getString(): Promise<string>;
     writeFile(name: string, content: string): Promise<string>;
+    getEnv(key: string): Promise<string>;
 }
 
 export default TurboModuleRegistry.get<Spec>(
-  'SampleModule',
+  'MainModule',
 ) as Spec | null;

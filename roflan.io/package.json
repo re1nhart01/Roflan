@@ -9,12 +9,13 @@
     "start": "react-native start",
     "test": "jest",
     "windows": "react-native run-windows",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package",
+    "codegen": "react-native-codegen --config codegen.config.json"
   },
   "codegenConfig": {
-    "name": "roflan",
+    "name": "NativeMud",
     "type": "modules",
-    "jsSrcsDir": "./src/tm",
+    "jsSrcsDir": "src/tm",
     "windows": {
       "namespace": "NativeMud",
       "cppStringType": "std::string",
@@ -24,8 +25,10 @@
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.22.3",
+    "@react-native-clipboard/clipboard": "^1.14.1",
     "@react-native-community/netinfo": "^11.3.0",
     "@react-native-picker/picker": "^2.7.6",
+    "@react-native-windows/codegen": "^0.74.0",
     "@react-navigation/drawer": "^6.6.15",
     "@react-navigation/native": "^6.1.12",
     "@react-navigation/native-stack": "^6.9.20",
@@ -43,6 +46,7 @@
     "react-i18next": "^14.0.5",
     "react-native": "0.73.5",
     "react-native-calendars": "1.1304.0",
+    "react-native-codegen": "^0.70.7",
     "react-native-device-info": "^10.13.1",
     "react-native-gesture-handler": "^2.16.2",
     "react-native-macos": "^0.73.0-0",

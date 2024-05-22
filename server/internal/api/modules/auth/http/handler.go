@@ -86,8 +86,8 @@ func (auth *AuthHttpHandler) LoginHandler(context *gin.Context) {
 	pseudo.AddCode("+380935241232", "123123", true)
 
 	telegramIds, err := auth.GetTelegramIdsByLabel("phone", phoneNumber)
-	if err != nil {
-		context.JSON(helpers.GiveBadRequest(err.Error()+" 2", nil))
+	if err != nil || len(telegramIds) <= 0 {
+		context.JSON(helpers.GiveBadRequest("Telegram number is not registered", nil))
 		return
 	}
 

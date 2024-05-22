@@ -1,0 +1,5 @@
+{
+  "libraryName": "MainModule",
+  "schemaPath": "src/tm/NativeMainModule.ts",
+  "outputDirectory": "codegen"
+}

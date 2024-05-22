@@ -4,6 +4,7 @@ import { OTPInputForwardProps } from '@components/molecules/react-native-otp-inp
 import { Route, useRoute } from '@react-navigation/native';
 import { RootStackParams } from '@src/modules/navigation/helpers/Routes.ts';
 import { useStoreActions } from '@core/store/store.ts';
+import { InvalidResponseHandler } from '@core/http/respo.ts';
 
 export const useVerifyState = () => {
   const {
@@ -11,8 +12,9 @@ export const useVerifyState = () => {
   } = useRoute<Route<string, RootStackParams['VerifyScreen']>>();
   const {
     app: { setIsLoad },
-    auth: { setIsAuth },
+    auth: { setIsAuth, validateCode },
   } = useStoreActions((state) => state);
+  const [error, setError] = useState('');
   const [code, setCode] = useState('');
   const [isInvalid, setIsInvalid] = useState(true);
   const KEY_CODE_LENGTH = 6;
@@ -23,19 +25,25 @@ export const useVerifyState = () => {
     }
   }, []);
 
-  const onCodeConfirm = useCallback(() => {
+  const onCodeConfirm = useCallback(async () => {
     setIsLoad(true);
-
     try {
-      setIsAuth(true);
+      await validateCode({
+        phone,
+        code,
+      });
     } catch (e) {
-      /* empty */
+      console.log(e instanceof InvalidResponseHandler);
+      if (e instanceof InvalidResponseHandler) {
+        console.log(e.hint);
+        setError(e?.hint || '');
+      }
     } finally {
       setTimeout(() => {
         setIsLoad(false);
-      }, 10000);
+      }, 2000);
     }
-  }, [setIsAuth, setIsLoad]);
+  }, [code, phone, setIsLoad, validateCode]);
 
   const opacityOfValue = isInvalid ? 0.4 : 1;
 
@@ -61,6 +69,7 @@ export const useVerifyState = () => {
     isInvalid,
     opacityOfValue,
     phone,
+    error,
     onCodeConfirm,
   };
 };

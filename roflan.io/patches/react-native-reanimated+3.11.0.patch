@@ -1,0 +1,22 @@
+diff --git a/node_modules/react-native-reanimated/src/reanimated2/js-reanimated/index.ts b/node_modules/react-native-reanimated/src/reanimated2/js-reanimated/index.ts
+index 550c210..0890377 100644
+--- a/node_modules/react-native-reanimated/src/reanimated2/js-reanimated/index.ts
++++ b/node_modules/react-native-reanimated/src/reanimated2/js-reanimated/index.ts
+@@ -3,7 +3,7 @@ import JSReanimated from './JSReanimated';
+ import type { StyleProps } from '../commonTypes';
+ import type { AnimatedStyle } from '../helperTypes';
+ import { isWeb } from '../PlatformChecker';
+-import { PropsAllowlists } from '../../propsAllowlists';
++import * as List from '../../propsAllowlists';
+ 
+ // eslint-disable-next-line @typescript-eslint/no-explicit-any
+ let createReactDOMStyle: (style: any) => any;
+@@ -185,7 +185,7 @@ const updatePropsDOM = (
+ };
+ 
+ function isNativeProp(propName: string): boolean {
+-  return !!PropsAllowlists.NATIVE_THREAD_PROPS_WHITELIST[propName];
++  return !!List.PropsAllowlists.NATIVE_THREAD_PROPS_WHITELIST[propName];
+ }
+ 
+ export default reanimatedJS;

@@ -4,13 +4,13 @@
 import { and, or } from 'ramda';
 
 import { tokensCacheStore } from '@core/caching';
-import NativeSampleModule from '@tm/NativeSampleModule.ts';
+import NativeMainModule from '@tm/NativeMainModule.ts';
 import { Localization } from '@core/constants/localization.ts';
 import type {
   ChatDateSeparatorType,
   ChatMessageType,
   MediaDataType,
-} from '../store/chat.store.types';
+} from '@core/store/storages/chat/chat.store.types.ts';
 import type {
   ChatDataType,
   ChatDataTypeUnion,
@@ -20,7 +20,7 @@ import { UIMessageType } from './types';
 
 export const getMessagingURL = async (topicId: string | null) => {
   const token = await tokensCacheStore.take();
-  const messaging = await NativeSampleModule?.getEnv('MESSAGING_URL_WSS');
+  const messaging = NativeMainModule?.getEnv('MESSAGING_URL_WSS');
   return `${messaging}api/messaging/${topicId}/${token.access_token}` as const;
 };
 

@@ -1,24 +1,24 @@
-import axios from "axios";
-import { action, thunk } from "easy-peasy";
-import { defaultTo, isNil } from "ramda";
-import { Config } from "react-native-config";
+import axios from 'axios';
+import { action, thunk } from 'easy-peasy';
+import { defaultTo, isNil } from 'ramda';
+import { Config } from 'react-native-config';
 
-import { arrayToDictionary } from "helpers/functions";
-import { requester } from "services/http/requestor";
-import type { StoreModel } from "store/store.types";
+import { arrayToDictionary } from 'helpers/functions';
+import { requester } from 'services/http/requestor';
+import type { StoreModel } from 'store/store.types';
 
 import {
   addMessageWithSeparation,
   splitMessagesByDelimiter,
-} from "../helpers/functions";
+} from '../../../../modules/chat/helpers/functions.ts';
 import type {
   ChatMessageType,
-  ChatsModel,
   ChatTopicType,
+  ChatsModel,
   MessagesCountAPIType,
   MessagingAPIPagingType,
   UnreadCounterObject,
-} from "./chat.store.types";
+} from './chat.store.types.ts';
 
 const chatModel: ChatsModel = {
   topics: [],
@@ -32,7 +32,7 @@ const chatModel: ChatsModel = {
     state.topics = payload;
     state.topicsDictionary = arrayToDictionary<ChatTopicType>(
       payload,
-      "externalId"
+      'externalId',
     );
   }),
   updateSpecificCounter: action((state, payload) => {
@@ -60,11 +60,11 @@ const chatModel: ChatsModel = {
       };
 
       const { data } = await requester<ChatTopicType>(
-        "orders/chat/topic",
-        "POST",
+        'orders/chat/topic',
+        'POST',
         {},
         addTopicBody,
-        true
+        true,
       );
       const editedNewTopic: ChatTopicType = {
         topicId: data.topicId,
@@ -83,16 +83,16 @@ const chatModel: ChatsModel = {
     } catch (e) {
       if (axios.isAxiosError(e)) {
       } else {
-        console.warn("Not Axios Error");
+        console.warn('Not Axios Error');
       }
-      throw new Error("Aborting addTopic");
+      throw new Error('Aborting addTopic');
     }
   }),
   getTopicByRequestId: thunk((_, payload, { getStoreState }) => {
     const storeState = getStoreState() as StoreModel;
     if (storeState.chats.topics) {
       const item: ChatTopicType | undefined = storeState.chats.topics.find(
-        (topic) => `${topic.externalId}` === `${payload}`
+        (topic) => `${topic.externalId}` === `${payload}`,
       );
       return defaultTo(null, item);
     }
@@ -101,12 +101,12 @@ const chatModel: ChatsModel = {
   getTopics: thunk(async (actions) => {
     try {
       const { data } = await requester<MessagingAPIPagingType<ChatTopicType>>(
-        "topics",
-        "GET",
+        'topics',
+        'GET',
         {},
         undefined,
         true,
-        Config.MESSAGING_URL
+        Config.MESSAGING_URL,
       );
       actions.setTopics(data.data);
 
@@ -114,9 +114,9 @@ const chatModel: ChatsModel = {
     } catch (e) {
       if (axios.isAxiosError(e)) {
       } else {
-        console.warn("Not Axios Error");
+        console.warn('Not Axios Error');
       }
-      throw new Error("Aborting getTopics");
+      throw new Error('Aborting getTopics');
     }
   }),
   setMessageList: action((state, payload) => {
@@ -127,7 +127,7 @@ const chatModel: ChatsModel = {
   }),
   updateSendMessage: action((state, payload) => {
     const msgList = state.messagesList;
-    if (msgList.length === 1 && msgList[0]?.type !== "separator") {
+    if (msgList.length === 1 && msgList[0]?.type !== 'separator') {
       (msgList[0] as ChatMessageType).isLocal = false;
       msgList[0].id = payload.id;
       return;
@@ -159,15 +159,15 @@ const chatModel: ChatsModel = {
           MessagingAPIPagingType<ChatMessageType>
         >(
           `messages?limit=${itemsPerPage}&page=${page}&filter=topic.id||$eq||${topicId}&sort=createdAt,DESC`,
-          "GET",
+          'GET',
           {},
           undefined,
           true,
-          Config.MESSAGING_URL
+          Config.MESSAGING_URL,
         );
         const reorderedList = splitMessagesByDelimiter(
           storeState.chats.messagesList,
-          data.data
+          data.data,
         );
         actions.setMessageList(reorderedList);
         actions.setTotalPages(defaultTo(1, data.pageCount));
@@ -176,11 +176,11 @@ const chatModel: ChatsModel = {
       } catch (e) {
         if (axios.isAxiosError(e)) {
         } else {
-          console.warn("Not Axios Error");
+          console.warn('Not Axios Error');
         }
-        throw new Error("Aborting getTopics");
+        throw new Error('Aborting getTopics');
       }
-    }
+    },
   ),
   setTotalPages: action((state, payload) => {
     state.totalPages = payload;
@@ -191,7 +191,7 @@ const chatModel: ChatsModel = {
     const withSeparator = addMessageWithSeparation(
       lastMessage,
       payload,
-      messageListLength
+      messageListLength,
     );
     state.messagesList = [...withSeparator, ...state.messagesList];
   }),
@@ -202,12 +202,12 @@ const chatModel: ChatsModel = {
   getUnreadMessagesCounter: thunk(async (actions) => {
     try {
       const { data } = await requester<MessagesCountAPIType[]>(
-        "topics/messages/count",
-        "GET",
+        'topics/messages/count',
+        'GET',
         {},
         undefined,
         true,
-        Config.MESSAGING_URL
+        Config.MESSAGING_URL,
       );
       const response = defaultTo({ total: 0, count: [] }, data[0]);
       actions.setTotalUnreadMessagesCount(defaultTo([], response.count));
@@ -215,9 +215,9 @@ const chatModel: ChatsModel = {
     } catch (e) {
       if (axios.isAxiosError(e)) {
       } else {
-        console.warn("Not Axios Error");
+        console.warn('Not Axios Error');
       }
-      throw new Error("Aborting getUnreadMessagesCounter");
+      throw new Error('Aborting getUnreadMessagesCounter');
     }
   }),
   setUnreadCounterList: action((state, payload) => {
@@ -225,7 +225,7 @@ const chatModel: ChatsModel = {
   }),
   setTotalUnreadMessagesCount: action((state, payload) => {
     state.unreadCounterList = payload;
-    state.messagesCounterDictionary = arrayToDictionary(payload, "topicId");
+    state.messagesCounterDictionary = arrayToDictionary(payload, 'topicId');
   }),
 };
 

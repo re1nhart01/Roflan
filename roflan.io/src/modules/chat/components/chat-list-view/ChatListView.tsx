@@ -10,7 +10,7 @@ import { EmptyScreen } from '@components/molecules/empty-screen/EmptyScreen.tsx'
 import { Localization } from '@core/constants/localization.ts';
 import type { ChatDataTypeUnion } from '../../helpers/types';
 import { MESSAGES_PER_PAGE } from '../../helpers/types';
-import type { ChatMessageType } from '../../store/chat.store.types';
+import type { ChatMessageType } from '@core/store/storages/chat/chat.store.types.ts';
 import ChatListLoader from '../chat-list-loader/ChatListLoader';
 import type { chatScrollButtonForwardProps } from '../chat-scroll-button/ChatScrollButton';
 import ChatScrollButton from '../chat-scroll-button/ChatScrollButton';

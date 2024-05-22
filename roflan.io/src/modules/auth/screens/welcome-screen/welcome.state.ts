@@ -1,23 +1,21 @@
 import { useCallback, useEffect } from 'react';
 import { Linking } from 'react-native';
-import NativeSampleModule from '@tm/NativeSampleModule.ts';
+import NativeCppModule from '@tm/NativeMainModule.ts';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { RootStackParams, Routes } from '@src/modules/navigation/helpers/Routes.ts';
 import { useStoreActions, useStoreState } from '@core/store/store.ts';
 
 export const useWelcomeState = () => {
+  console.log(NativeCppModule?.getEnv('TERMS_OF_USE'));
   const navigation = useNavigation<NavigationProp<RootStackParams>>();
   const {
     auth: { setIsAuth },
   } = useStoreActions((state) => state);
   const {
     auth: { isAuth },
-  } = useStoreState((state) => {
-    console.log(state);
-    return state;
-  });
+  } = useStoreState((state) => state);
   const goToTermsOfUse = useCallback(async () => {
-    const termsEnv = await NativeSampleModule?.getEnv('TERMS_OF_USE');
+    const termsEnv = NativeCppModule?.getEnv('TERMS_OF_USE');
     if (termsEnv) {
       await Linking.openURL(termsEnv);
     }

@@ -39,6 +39,7 @@ export const Localization = {
     qr: `To continue your sign in, please scan this qr code or press on this text to go to telegram bot RoflanBot.
     \n Press Start and after that copy and text below and put put your phone number. Example  "/register +38000000000"`,
     qrExample: '/register +38000000000',
+    copied: 'Copied to Clipboard!',
   },
   components: {
     text_input_placeholder: 'Write your message',
@@ -47,5 +48,8 @@ export const Localization = {
   time: {
     today: 'Today',
     yesterday: 'Yesterday',
+  },
+  hintMessages: {
+
   },
 };

@@ -405,6 +405,11 @@
   resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.23.9.tgz#7b903b6149b0f8fa7ad564af646c4c38a77fc44b"
   integrity sha512-9tcKgqKbs3xGJ+NtKF2ndOBBLVwPjl1SHxPQkd36r3Dlirw3xWUeGaTbqr7uGZcTaxkVNwc+03SVP7aCdWrTlA==
 
+"@babel/parser@^7.14.0":
+  version "7.24.5"
+  resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.24.5.tgz#4a4d5ab4315579e5398a82dcf636ca80c3392790"
+  integrity sha512-EOv5IK8arwh3LI47dz1b0tKUb/1uhHAnHJOrjgtQMIpu1uXd9mlFrJg9IUgGUgZ41Ch0K8REPTYpO7B76b4vJg==
+
 "@babel/plugin-bugfix-safari-id-destructuring-collision-in-function-expression@^7.23.3":
   version "7.23.3"
   resolved "https://registry.yarnpkg.com/@babel/plugin-bugfix-safari-id-destructuring-collision-in-function-expression/-/plugin-bugfix-safari-id-destructuring-collision-in-function-expression-7.23.3.tgz#5cd1c87ba9380d0afb78469292c954fee5d2411a"
@@ -2296,6 +2301,11 @@
   dependencies:
     merge-options "^3.0.4"
 
+"@react-native-clipboard/clipboard@^1.14.1":
+  version "1.14.1"
+  resolved "https://registry.yarnpkg.com/@react-native-clipboard/clipboard/-/clipboard-1.14.1.tgz#835f82fc86881a0808a8405f2576617bb5383554"
+  integrity sha512-SM3el0A28SwoeJljVNhF217o0nI4E7RfalLmuRQcT1/7tGcxUjgFa3jyrEndYUct8/uxxK5EUNGUu1YEDqzxqw==
+
 "@react-native-community/cli-clean@12.3.2":
   version "12.3.2"
   resolved "https://registry.yarnpkg.com/@react-native-community/cli-clean/-/cli-clean-12.3.2.tgz#d4f1730c3d22d816b4d513d330d5f3896a3f5921"
@@ -2681,6 +2691,18 @@
     source-map-support "^0.5.19"
     yargs "^16.2.0"
 
+"@react-native-windows/codegen@^0.74.0":
+  version "0.74.0"
+  resolved "https://registry.yarnpkg.com/@react-native-windows/codegen/-/codegen-0.74.0.tgz#9024ba6e871088e42356f94eb126697e6268487b"
+  integrity sha512-jSN5PZQKZIuaukoUJU9LOyHs2Y/KmG5xsLtSGRUcjG8wTrzP+xXxj3115hHdk9vreL80o+pup5o1UNfyLfvGIA==
+  dependencies:
+    "@react-native-windows/fs" "0.74.0"
+    chalk "^4.1.0"
+    globby "^11.0.4"
+    mustache "^4.0.1"
+    source-map-support "^0.5.19"
+    yargs "^16.2.0"
+
 "@react-native-windows/find-repo-root@0.73.0":
   version "0.73.0"
   resolved "https://registry.yarnpkg.com/@react-native-windows/find-repo-root/-/find-repo-root-0.73.0.tgz#21a2983bfd4052323a4672ed2e32a5c3af8627a7"
@@ -2693,6 +2715,13 @@
   version "0.73.0"
   resolved "https://registry.yarnpkg.com/@react-native-windows/fs/-/fs-0.73.0.tgz#5fcdada259f286dff8d462505982c9113a2ca612"
   integrity sha512-Vg0gJavc6oO4TkTMK+s8V+1KhLlJgdtuwsUaBNRfhi+Dr/lWy7GKitV6rBn/UkG8DCt9LBmwdCZWpncxSs8CDA==
+  dependencies:
+    graceful-fs "^4.2.8"
+
+"@react-native-windows/fs@0.74.0":
+  version "0.74.0"
+  resolved "https://registry.yarnpkg.com/@react-native-windows/fs/-/fs-0.74.0.tgz#bbef312e6c9541292a69e607c1e5fbc47e2a665c"
+  integrity sha512-YK8CkNHSwskU3PPCPTw1DPen3/QXS7qP7rAp+FNK4LfyOgiO1V9TiIyz3DcvqOsD+iwriXoEl/3Bvo/8HmlTbQ==
   dependencies:
     graceful-fs "^4.2.8"
 
@@ -5777,6 +5806,11 @@ flow-parser@0.*:
   resolved "https://registry.yarnpkg.com/flow-parser/-/flow-parser-0.229.2.tgz#b19ce67bfbfab8c91ee51dcddb9c3ab0f3bf2ab7"
   integrity sha512-T72XV2Izvl7yV6dhHhLaJ630Y6vOZJl6dnOS6dN0bPW9ExuREu7xGAf3omtcxX76POTuux9TJPu9ZpS48a/rdw==
 
+flow-parser@^0.121.0:
+  version "0.121.0"
+  resolved "https://registry.yarnpkg.com/flow-parser/-/flow-parser-0.121.0.tgz#9f9898eaec91a9f7c323e9e992d81ab5c58e618f"
+  integrity sha512-1gIBiWJNR0tKUNv8gZuk7l9rVX06OuLzY9AoGio7y/JT4V1IZErEMEq2TJS+PFcw/y0RshZ1J/27VfK1UQzYVg==
+
 flow-parser@^0.206.0:
   version "0.206.0"
   resolved "https://registry.yarnpkg.com/flow-parser/-/flow-parser-0.206.0.tgz#f4f794f8026535278393308e01ea72f31000bfef"
@@ -8532,6 +8566,16 @@ react-native-calendars@1.1304.0:
     xdate "^0.8.0"
   optionalDependencies:
     moment "^2.29.4"
+
+react-native-codegen@^0.70.7:
+  version "0.70.7"
+  resolved "https://registry.yarnpkg.com/react-native-codegen/-/react-native-codegen-0.70.7.tgz#8f6b47a88740ae703209d57b7605538d86dacfa6"
+  integrity sha512-qXE8Jrhc9BmxDAnCmrHFDLJrzgjsE/mH57dtC4IO7K76AwagdXNCMRp5SA8XdHJzvvHWRaghpiFHEMl9TtOBcQ==
+  dependencies:
+    "@babel/parser" "^7.14.0"
+    flow-parser "^0.121.0"
+    jscodeshift "^0.14.0"
+    nullthrows "^1.1.1"
 
 react-native-device-info@^10.13.1:
   version "10.13.1"

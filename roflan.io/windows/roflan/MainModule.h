@@ -29,16 +29,16 @@ namespace MainModule
           writeFileThread(path, name, content);
           result.Resolve("true");
         }
-        
+
         REACT_METHOD(showToastNotification, L"showToastNotification");
         void showToastNotification(std::string const label, std::string const body, React::ReactPromise<bool>&& result) noexcept {
             (*dec).showToastNotification(label, body);
             result.Resolve(true);
         }
-        REACT_METHOD(getEnv, L"getEnv");
-        void getEnv(std::string const label, React::ReactPromise<std::string>&& result) noexcept {
+        REACT_SYNC_METHOD(getEnv, L"getEnv");
+        std::string getEnv(std::string const label) noexcept {
             std::string env = (*dec).getEnv(label);
-            result.Resolve(env);
+            return env;
         }
   };
 }

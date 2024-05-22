@@ -5,7 +5,7 @@ import type {
   ChatDataType,
   ChatDataTypeUnion,
   UIMessageType,
-} from "../helpers/types";
+} from "../../../../modules/chat/helpers/types.ts";
 
 export interface ChatsModel {
   //topics

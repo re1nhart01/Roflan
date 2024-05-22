@@ -1,7 +1,7 @@
 import type {
   ChatDateSeparatorType,
   ChatMessageType,
-} from '../store/chat.store.types';
+} from '@core/store/storages/chat/chat.store.types.ts';
 
 export const MESSAGES_PER_PAGE = 30;
 export const INPUT_HEIGHT = 64;

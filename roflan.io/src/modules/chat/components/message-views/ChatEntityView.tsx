@@ -5,7 +5,7 @@ import { ChatDataType } from '../../helpers/types';
 import type {
   ChatDateSeparatorType,
   ChatMessageType,
-} from '../../store/chat.store.types';
+} from '@core/store/storages/chat/chat.store.types.ts';
 import { ChatDateSeparator } from '../chat-date-separator/ChatDateSeparator';
 import { chatEntityViewStyles } from './chatEntityView.styles';
 import TextMessageView from './text-message-view/TextMessageView';

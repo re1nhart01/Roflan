@@ -18,6 +18,7 @@ export const VerifyScreen: FC = () => {
     handleFieldPress,
     isInvalid,
     opacityOfValue,
+    error,
     phone,
     onCodeConfirm,
   } = useVerifyState();
@@ -42,7 +43,7 @@ export const VerifyScreen: FC = () => {
                 onChange={setCode}
                 onCodeChanged={setCode}
               />
-              <ErrorMessage errorMessage="" hideIfTextEmpty />
+              <ErrorMessage errorMessage={error} hideIfTextEmpty />
             </Box>
           </TouchableOpacity>
           <Box maxW="750px" mt="16">

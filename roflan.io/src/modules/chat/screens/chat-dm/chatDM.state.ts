@@ -1,23 +1,21 @@
-import type { Route } from '@react-navigation/native';
 import {
   useFocusEffect,
   useNavigation,
-  useRoute,
 } from '@react-navigation/native';
 import { defaultTo, isNil } from 'ramda';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {FlatList, InteractionManager} from 'react-native';
-import { RootStackParams, Routes } from '@src/modules/navigation/helpers/Routes.ts';
-import {useStoreActions, useStoreState} from "@core/store/store.ts";
+import { FlatList, InteractionManager } from 'react-native';
+import { Routes } from '@src/modules/navigation/helpers/Routes.ts';
+import { useStoreActions, useStoreState } from '@core/store/store.ts';
 import {
-  chatScrollButtonForwardProps
-} from "@src/modules/home/screens/chat/components/chat-scroll-button/ChatScrollButton.tsx";
-import {ChatDataTypeUnion} from "@src/modules/home/screens/chat/helpers/types.ts";
-import {useChatEmitter} from "@src/modules/home/screens/chat/helpers/hooks/useChatEmitter.ts";
-import {getMessagingURL} from "@src/modules/home/screens/chat/helpers/functions.ts";
-import {useWebsocket} from "@core/hooks/useWebsocket.ts";
-import {tokensCacheStore} from "@core/caching";
+  chatScrollButtonForwardProps,
+} from '@src/modules/chat/components/chat-scroll-button/ChatScrollButton.tsx';
+import { ChatDataTypeUnion } from '@src/modules/chat/helpers/types.ts';
+import { useChatEmitter } from '@src/modules/chat/helpers/hooks/useChatEmitter.ts';
+import { getMessagingURL } from '@src/modules/chat/helpers/functions.ts';
+import { useWebsocket } from '@core/hooks/useWebsocket.ts';
+import { tokensCacheStore } from '@core/caching';
 
 export const useChatDMState = () => {
   // const {

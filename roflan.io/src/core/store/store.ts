@@ -2,12 +2,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createStore, createTypedHooks, persist } from 'easy-peasy';
 import { appStore } from '@core/store/storages/app/app.store.ts';
 import { authStore } from '@core/store/storages/auth/auth.store.ts';
+import { userStore } from '@core/store/storages/user/user.store.ts';
 import { StoreModel } from './store.type';
 
 const STORE_KEY = 'APPLICATION_STORE';
 export const storeModel: StoreModel = {
   app: appStore,
   auth: authStore,
+  user: userStore,
 };
 
 export const store = createStore<StoreModel>(

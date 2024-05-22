@@ -51,7 +51,7 @@ export const SignInScreen: FC = () => {
                             maxLength={MAX_PHONE_LENGTH}
                             value={values.phone}
                             placeholder={Localization.placeholders.phone}
-                            setText={(v) => {updateFormState('phone', v); setPhone(v); }}
+                            setText={(v) => { updateFormState('phone', v); setPhone(v); }}
                           />
                           <ErrorMessage errorMessage={phone.errorMessage} hideIfTextEmpty />
                         </Box>
@@ -65,7 +65,7 @@ export const SignInScreen: FC = () => {
                           <ErrorMessage errorMessage={password.errorMessage} hideIfTextEmpty />
                         </Box>
                         <Box>
-                          <ButtonStyle onPress={handleSignIn}>
+                          <ButtonStyle onPress={onSubmit}>
                             <Text color="white" fontSize={14}>
                               {Localization.onboarding.goBtn}
                             </Text>

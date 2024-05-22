@@ -3,7 +3,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { getTimeTextByDate } from '../../helpers/functions';
-import type { ChatDateSeparatorType } from '../../store/chat.store.types';
+import type { ChatDateSeparatorType } from '@core/store/storages/chat/chat.store.types.ts';
 import { chatDateSeparatorStyles } from './chatDateSeparator.styles';
 
 type chatDateSeparatorProps = {

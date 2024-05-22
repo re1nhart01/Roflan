@@ -7,7 +7,7 @@ import { useStoreActions } from "store/store";
 import type {
   ChatMessageType,
   EventMessage,
-} from "../../store/chat.store.types";
+} from "@core/store/storages/chat/chat.store.types.ts";
 import { createTransferMessage } from "../functions";
 import { ChatDataType } from "../types";
 

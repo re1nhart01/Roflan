@@ -25,7 +25,7 @@ interface PhoneInputProps {
 const { Wrapper, PhoneText, PhoneTextInput } = PhoneInputStyles;
 
 export const MAX_PHONE_LENGTH = 13;
-
+export const phoneTemplate = '+38000000000';
 export const PhoneInput = ({
   phoneValue,
   onChangeText,

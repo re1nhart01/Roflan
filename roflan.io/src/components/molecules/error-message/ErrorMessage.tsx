@@ -21,10 +21,6 @@ export const ErrorMessage = ({
   alignment,
   hideIfTextEmpty,
 }: ErrorMessageProps) => {
-  const extractErrorMessage = useCallback(
-    () => {},
-    [errorMessage],
-  );
 
   if (hideIfTextEmpty && isEmpty(errorMessage)) {
     return null;
@@ -36,7 +32,7 @@ export const ErrorMessage = ({
       marginTop={marginTop}
       marginBottom={marginBottom}
     >
-      {Localization.errors.unexpectedError}
+      {errorMessage}
     </ErrorMessageText>
   );
 };

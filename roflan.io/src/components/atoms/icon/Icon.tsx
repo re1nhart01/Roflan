@@ -20,7 +20,7 @@ export const SVGIcon = ({
   type,
   size,
   style,
-  color = 'lightBlack',
+  color,
   onPress,
   hitSlop,
 }: SvgProps & IconProps) => {

@@ -1,8 +1,7 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { TextInput } from 'react-native';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { equals, isNil } from 'ramda';
 import { OTPInputForwardProps } from '@components/molecules/react-native-otp-input/OTPInputView.d';
-import { NavigationProp, Route, useNavigation, useRoute } from '@react-navigation/native';
+import { Route, useRoute } from '@react-navigation/native';
 import { RootStackParams } from '@src/modules/navigation/helpers/Routes.ts';
 import { useStoreActions } from '@core/store/store.ts';
 
@@ -18,7 +17,6 @@ export const useVerifyState = () => {
   const [isInvalid, setIsInvalid] = useState(true);
   const KEY_CODE_LENGTH = 6;
   const inputRef = useRef<OTPInputForwardProps>(null);
-  const navigation = useNavigation<NavigationProp<RootStackParams>>();
   const handleFieldPress = useCallback(() => {
     if (!isNil(inputRef.current)) {
       inputRef.current?.handleAutoFocus();
@@ -27,14 +25,15 @@ export const useVerifyState = () => {
 
   const onCodeConfirm = useCallback(() => {
     setIsLoad(true);
+
     try {
       setIsAuth(true);
     } catch (e) {
-
+      /* empty */
     } finally {
       setTimeout(() => {
         setIsLoad(false);
-      }, 3000);
+      }, 10000);
     }
   }, [setIsAuth, setIsLoad]);
 

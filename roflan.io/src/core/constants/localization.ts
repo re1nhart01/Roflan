@@ -3,6 +3,7 @@ export const Localization = {
     checkConnection: 'Check your internet connection',
     unexpectedError: 'Unexpected error, try again later',
     uncorrectNumber: 'Invalid number',
+    connection: 'Trying to connect to server, please wait',
   },
   onboarding: {
     welcome: 'Welcome to Roflan',
@@ -38,5 +39,13 @@ export const Localization = {
     qr: `To continue your sign in, please scan this qr code or press on this text to go to telegram bot RoflanBot.
     \n Press Start and after that copy and text below and put put your phone number. Example  "/register +38000000000"`,
     qrExample: '/register +38000000000',
+  },
+  components: {
+    text_input_placeholder: 'Write your message',
+    no_messages_yet: 'No Messages Yet :(',
+  },
+  time: {
+    today: 'Today',
+    yesterday: 'Yesterday',
   },
 };

@@ -22,7 +22,7 @@ export const Loader = () => {
         easing: Easing.linear,
       });
     }
-  }, [isLoad, val]);
+  }, [isLoad]);
 
   if (!isLoad) return null;
 

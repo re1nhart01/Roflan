@@ -9,6 +9,9 @@
 // Includes from @react-native-community/netinfo
 #include <winrt/ReactNativeNetInfo.h>
 
+// Includes from @react-native-picker/picker
+#include <winrt/ReactNativePicker.h>
+
 // Includes from react-native-device-info
 #include <winrt/RNDeviceInfoCPP.h>
 
@@ -30,6 +33,8 @@ void RegisterAutolinkedNativeModulePackages(winrt::Windows::Foundation::Collecti
     packageProviders.Append(winrt::ReactNativeAsyncStorage::ReactPackageProvider());
     // IReactPackageProviders from @react-native-community/netinfo
     packageProviders.Append(winrt::ReactNativeNetInfo::ReactPackageProvider());
+    // IReactPackageProviders from @react-native-picker/picker
+    packageProviders.Append(winrt::ReactNativePicker::ReactPackageProvider());
     // IReactPackageProviders from react-native-device-info
     packageProviders.Append(winrt::RNDeviceInfoCPP::ReactPackageProvider());
     // IReactPackageProviders from react-native-screens

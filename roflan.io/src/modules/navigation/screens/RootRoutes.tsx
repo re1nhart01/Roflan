@@ -14,8 +14,8 @@ export const RootRoutes = () => {
   } = useStoreState((state) => state);
   return (
     <View accessible={false} focusable={false} importantForAccessibility="no-hide-descendants" style={[Container]}>
-      <Loader />
       {isAuth ? <DrawerRoutes /> : <AuthRoutes />}
+      <Loader />
     </View>
   );
 };

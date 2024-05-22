@@ -5,6 +5,7 @@ import { RootStackParams, Routes } from '@src/modules/navigation/helpers/Routes.
 import { WelcomeScreen } from '@src/modules/auth/screens/welcome-screen/WelcomeScreen.tsx';
 import { SignInScreen } from '@src/modules/auth/screens/sign-in-screen/SignInScreen.tsx';
 import { SignUpScreen } from '@src/modules/auth/screens/sign-up-screen/SignUpScreen.tsx';
+import {VerifyScreen} from "@src/modules/auth/screens/verify-screen/VerifyScreen.tsx";
 
 const AuthStack = createNativeStackNavigator<RootStackParams>();
 
@@ -42,7 +43,7 @@ export const AuthRoutes: FC = () => {
       />
       <AuthStack.Screen
         name={Routes.VerifyScreen}
-        component={SignInScreen}
+        component={VerifyScreen}
         options={{
 
         }}

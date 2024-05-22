@@ -11,12 +11,13 @@ export const animatedInputStyles = {
   `,
   TextInput: styled.TextInput<{ maxHeight?: number }>`
     min-height: 40px;
-    width: 90%;
+    width: 100%;
     max-height: 60px;
     font-size: 14px;
     color: #ffffff;
     line-height: 24px;
-    padding-bottom: 8px;
+    padding-top: 8px;
+    padding-left: 8px;
   `,
   RightContainer: styled.TouchableOpacity.attrs({
     activeOpacity: 1,

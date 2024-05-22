@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "iostream"
 #include <exception>
 #include <fstream>
@@ -86,7 +87,7 @@ void writeFileThread(const std::string fullPath, const std::string name, const s
     thread.join();
 }
 
-std::string SampleModuleDecl::WriteFile(const std::string fullPath, const std::string name, const std::string content)  {
+std::string SampleModuleDecl::WriteFile(const std::string fullPath, const std::string name, const std::string content) {
    try {
        winrt::hstring path = winrt::to_hstring(fullPath);
        winrt::hstring v = winrt::to_hstring(name);

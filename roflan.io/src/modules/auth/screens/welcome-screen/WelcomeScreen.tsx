@@ -6,12 +6,12 @@ import { ImageBackground, StyleSheet } from 'react-native';
 import { Box, Button, Text, VStack } from 'native-base';
 import { SVGIcon } from '@components/atoms/icon/Icon.tsx';
 import { Localization } from '@core/constants/localization.ts';
+import { ButtonComponent } from '@components/atoms/button/Button.tsx';
 
 const { Wrapper } = welcomeScreenStyle;
 
 export const WelcomeScreen: FC = () => {
   const { goToTermsOfUse, goToSignIn } = useWelcomeState();
-  const a = 5;
   return (
     <Wrapper>
       <Box flex={1} bg="darkBlue.900" justifyContent="center" alignItems="center">
@@ -26,9 +26,11 @@ export const WelcomeScreen: FC = () => {
             <Text color="white" fontSize={18}>
               {Localization.onboarding.text}
             </Text>
-            <Button opacity={0.5} onPress={goToSignIn} style={styles.button}>
-              {Localization.onboarding.goBtn}
-            </Button>
+            <ButtonComponent onPress={goToSignIn} style={styles.button}>
+              <Text color="white" fontSize={14}>
+                {Localization.onboarding.goBtn}
+              </Text>
+            </ButtonComponent>
             <Text onPress={goToTermsOfUse} style={styles.terms}>Terms & Privacy Policy</Text>
           </VStack>
         </ImageBackground>

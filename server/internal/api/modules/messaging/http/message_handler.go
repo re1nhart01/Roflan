@@ -53,6 +53,10 @@ func (message *MessageHttpHandler) AddHandler(context *gin.Context) {
 	}
 }
 
+func (message *MessageHttpHandler) GetMessagesCounter(context *gin.Context) {
+	context.JSON(helpers.GiveOkResponse())
+}
+
 func (message *MessageHttpHandler) RemoveHandler(context *gin.Context) {
 	context.JSON(helpers.GiveOkResponse())
 }

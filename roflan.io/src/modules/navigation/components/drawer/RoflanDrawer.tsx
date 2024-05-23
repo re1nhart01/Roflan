@@ -11,6 +11,7 @@ import { TabBar } from '@src/modules/navigation/components/tab-bar/TabBar.tsx';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { RootStackParams, Routes } from '@src/modules/navigation/helpers/Routes.ts';
 import { roflanDrawerStyle } from '@src/modules/navigation/components/drawer/roflanDrawer.style.ts';
+import {UserRow} from "@components/molecules/user-row/UserRow.tsx";
 
 const { DrawerWrapper, OuterBox } = roflanDrawerStyle;
 

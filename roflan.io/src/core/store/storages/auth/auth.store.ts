@@ -8,6 +8,7 @@ import NativeMainModule from '@tm/NativeMainModule.ts';
 import { RefreshTokenResponse } from '@type/definitions.ts';
 import { tokensCacheStore } from '@core/caching';
 import { IAuthStore } from './auth.store.type';
+import {filteredFromActionsModel} from "@core/helpers/functions.ts";
 
 export const authStore: IAuthStore = {
   isAuth: false,
@@ -54,5 +55,9 @@ export const authStore: IAuthStore = {
       console.log(4);
       throw new Error('loginUser abort');
     }
+  }),
+  reset: action((state) => {
+    const filteredNewsModel = filteredFromActionsModel(authStore);
+    Object.assign(state, filteredNewsModel);
   }),
 };

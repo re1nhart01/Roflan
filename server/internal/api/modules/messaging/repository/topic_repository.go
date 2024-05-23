@@ -47,6 +47,7 @@ func (repo *TopicsRepository) GetBulkTopics(userHash string, queries map[string]
 		Pick(queries).
 		SJoin("left join (select * from topics) as t on topic_users.topic_hash_id = t.topic_hash").
 		Ignite(&result); err != nil {
+		fmt.Println(err)
 		return result, errors.New("paginator error")
 	}
 

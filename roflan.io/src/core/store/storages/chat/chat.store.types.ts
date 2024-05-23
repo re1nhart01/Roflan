@@ -1,25 +1,24 @@
-import type { Thunk } from "easy-peasy";
-import type { Action } from "easy-peasy";
+import type { Action, Thunk } from 'easy-peasy';
 
 import type {
   ChatDataType,
   ChatDataTypeUnion,
   UIMessageType,
-} from "../../../../modules/chat/helpers/types.ts";
+} from '../../../../modules/chat/helpers/types.ts';
 
 export interface ChatsModel {
-  //topics
+  // topics
   topics: Array<ChatTopicType>;
-  setTopics: Action<this, this["topics"]>;
+  setTopics: Action<this, this['topics']>;
   getTopics: Thunk<this>;
   getTopicByRequestId: Thunk<this, number | string>;
   addTopic: Thunk<this, { externalId: string }>;
-  //dictionaries
+  // dictionaries
   topicsDictionary: { [key: string]: ChatTopicType };
   messagesCounterDictionary: { [key: string]: UnreadCounterObject };
-  //messages
+  // messages
   messagesList: Array<ChatDataTypeUnion>;
-  setMessageList: Action<this, this["messagesList"]>;
+  setMessageList: Action<this, this['messagesList']>;
   cleanMessageList: Action<this>;
   getMessageList: Thunk<
     this,
@@ -29,9 +28,9 @@ export interface ChatsModel {
       itemsPerPage: number;
     }
   >;
-  //pages
+  // pages
   totalPages: number;
-  setTotalPages: Action<this, this["totalPages"]>;
+  setTotalPages: Action<this, this['totalPages']>;
   // adding message
   addDummyMessage: Action<this, ChatMessageType>;
   updateSendMessage: Action<this, ChatMessageType>;
@@ -46,6 +45,7 @@ export interface ChatsModel {
   setTotalUnreadMessagesCount: Action<this, UnreadCounterObject[]>;
   unreadCounterList: UnreadCounterObject[];
   setUnreadCounterList: Action<this, number>;
+  reset: Action<this>;
 }
 
 export interface BaseChatType {
@@ -117,12 +117,12 @@ export interface MediaTypeMessage {
 export interface ChatDateSeparatorType {
   createdAt: string;
   id: string;
-  type: "separator";
+  type: 'separator';
   uiMessageType: UIMessageType;
 }
 
 export interface ChatMemberType extends BaseChatType {
-  status: "active" | "inactive" | "archived";
+  status: 'active' | 'inactive' | 'archived';
   lastRead: number;
 }
 

@@ -3,6 +3,7 @@ import { createStore, createTypedHooks, persist } from 'easy-peasy';
 import { appStore } from '@core/store/storages/app/app.store.ts';
 import { authStore } from '@core/store/storages/auth/auth.store.ts';
 import { userStore } from '@core/store/storages/user/user.store.ts';
+import chatStore from '@core/store/storages/chat/chat.store.ts';
 import { StoreModel } from './store.type';
 
 const STORE_KEY = 'APPLICATION_STORE';
@@ -10,6 +11,7 @@ export const storeModel: StoreModel = {
   app: appStore,
   auth: authStore,
   user: userStore,
+  chats: chatStore,
 };
 
 export const store = createStore<StoreModel>(

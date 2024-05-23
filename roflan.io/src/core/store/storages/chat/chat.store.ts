@@ -1,16 +1,14 @@
 import axios from 'axios';
 import { action, thunk } from 'easy-peasy';
 import { defaultTo, isNil } from 'ramda';
-import { Config } from 'react-native-config';
-
-import { arrayToDictionary } from 'helpers/functions';
-import { requester } from 'services/http/requestor';
-import type { StoreModel } from 'store/store.types';
 
 import {
   addMessageWithSeparation,
   splitMessagesByDelimiter,
-} from '../../../../modules/chat/helpers/functions.ts';
+} from '@src/modules/chat/helpers/functions.ts';
+import { arrayToDictionary, filteredFromActionsModel } from '@core/helpers/functions.ts';
+import { StoreModel } from '@core/store/store.type.ts';
+import { requester } from '@core/http/requester.ts';
 import type {
   ChatMessageType,
   ChatTopicType,
@@ -20,7 +18,7 @@ import type {
   UnreadCounterObject,
 } from './chat.store.types.ts';
 
-const chatModel: ChatsModel = {
+const chatStore: ChatsModel = {
   topics: [],
   messagesList: [],
   unreadCounterList: [],
@@ -82,7 +80,7 @@ const chatModel: ChatsModel = {
       return data;
     } catch (e) {
       if (axios.isAxiosError(e)) {
-      } else {
+        /* empty */ } else {
         console.warn('Not Axios Error');
       }
       throw new Error('Aborting addTopic');
@@ -92,7 +90,7 @@ const chatModel: ChatsModel = {
     const storeState = getStoreState() as StoreModel;
     if (storeState.chats.topics) {
       const item: ChatTopicType | undefined = storeState.chats.topics.find(
-        (topic) => `${topic.externalId}` === `${payload}`,
+        (topic: ChatTopicType) => `${topic.externalId}` === `${payload}`,
       );
       return defaultTo(null, item);
     }
@@ -106,13 +104,13 @@ const chatModel: ChatsModel = {
         {},
         undefined,
         true,
-        Config.MESSAGING_URL,
       );
       actions.setTopics(data.data);
 
       return data;
     } catch (e) {
       if (axios.isAxiosError(e)) {
+        /* empty */
       } else {
         console.warn('Not Axios Error');
       }
@@ -163,7 +161,6 @@ const chatModel: ChatsModel = {
           {},
           undefined,
           true,
-          Config.MESSAGING_URL,
         );
         const reorderedList = splitMessagesByDelimiter(
           storeState.chats.messagesList,
@@ -175,6 +172,7 @@ const chatModel: ChatsModel = {
         return data;
       } catch (e) {
         if (axios.isAxiosError(e)) {
+          /* empty */
         } else {
           console.warn('Not Axios Error');
         }
@@ -207,13 +205,13 @@ const chatModel: ChatsModel = {
         {},
         undefined,
         true,
-        Config.MESSAGING_URL,
       );
       const response = defaultTo({ total: 0, count: [] }, data[0]);
       actions.setTotalUnreadMessagesCount(defaultTo([], response.count));
       actions.setUnreadCounterList(defaultTo(0, +response.total));
     } catch (e) {
       if (axios.isAxiosError(e)) {
+        /* empty */
       } else {
         console.warn('Not Axios Error');
       }
@@ -227,6 +225,10 @@ const chatModel: ChatsModel = {
     state.unreadCounterList = payload;
     state.messagesCounterDictionary = arrayToDictionary(payload, 'topicId');
   }),
+  reset: action((state) => {
+    const filteredNewsModel = filteredFromActionsModel(chatStore);
+    Object.assign(state, filteredNewsModel);
+  }),
 };
 
-export default chatModel;
+export default chatStore;

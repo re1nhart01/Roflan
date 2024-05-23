@@ -22,6 +22,7 @@ type Paginator struct {
 	UserData       string
 	Join           string
 	AcceptedFilter []string
+	Select         []string
 	Preloads       [][]interface{}
 }
 
@@ -46,6 +47,11 @@ func (pag *Paginator) SPage(page int) *Paginator {
 
 func (pag *Paginator) SJoin(joinq string) *Paginator {
 	pag.Join = joinq
+	return pag
+}
+
+func (pag *Paginator) SSelect(slist []string) *Paginator {
+	pag.Select = slist
 	return pag
 }
 
@@ -133,6 +139,10 @@ func (pag *Paginator) Ignite(obj *ObjectPaginator) error {
 		q.Joins(pag.Join)
 	}
 
+	if len(pag.Select) <= 0 {
+		q.Select(pag.Select)
+	}
+
 	if len(pag.Preloads) > 0 {
 		for _, v := range pag.Preloads {
 			q.Preload(v[0].(string), v[1:]...)
@@ -170,7 +180,7 @@ func (pag *Paginator) fromContextOrder(orderStr string) string {
 	for k, v := range splicedOrder {
 		splicedChunk := strings.Split(v, "^")
 		if len(splicedChunk) >= 2 {
-			result += splicedChunk[0] + " " + splicedChunk[1]
+			result += fmt.Sprintf("%s.%s", pag.Table, splicedChunk[0]) + " " + splicedChunk[1]
 			if k < len(splicedOrder)-1 {
 				result += " ,"
 			}

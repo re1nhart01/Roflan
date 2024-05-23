@@ -9,11 +9,13 @@ type IUserHandler interface {
 	base.IHandler
 	AliveHandler(context *gin.Context)
 	GetMyProfile(context *gin.Context)
+	GetUserList(context *gin.Context)
 }
 
 func UserRoute(engine *gin.Engine, handler IUserHandler) {
 	router := engine.Group(handler.GetPath())
 	{
 		router.GET(MeRoute, handler.GetMyProfile)
+		router.GET(List, handler.GetUserList)
 	}
 }

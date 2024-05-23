@@ -5,10 +5,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/roflan.io/api/base"
 	"github.com/roflan.io/helpers"
+	"github.com/roflan.io/paginator"
 )
 
 type IUserRepo interface {
 	ReadUserData(userHash string) (map[string]any, error)
+	GetPaginatedUserList(queries map[string][]string) (paginator.ObjectPaginator, error)
 }
 
 type UserHttpHandler struct {
@@ -22,6 +24,20 @@ func (user *UserHttpHandler) GetPath() string {
 
 func (user *UserHttpHandler) GetName() string {
 	return user.Name
+}
+
+func (user *UserHttpHandler) GetUserList(context *gin.Context) {
+	_, stopped := user.UnwrapUserData(context)
+	if stopped {
+		return
+	}
+	queries := context.Request.URL.Query()
+	if data, err := user.GetPaginatedUserList(queries); err != nil {
+		context.JSON(helpers.GiveBadRequest(err.Error(), nil))
+
+	} else {
+		context.JSON(helpers.GiveOkPaginatedResponse(data))
+	}
 }
 
 func (user *UserHttpHandler) GetMyProfile(context *gin.Context) {

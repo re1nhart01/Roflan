@@ -7,7 +7,7 @@ import {UserRow} from "@components/molecules/user-row/UserRow.tsx";
 
 const { Wrapper, Text } = verifyScreenStyle;
 
-export const HomeScreen: FC = () => {
+export const CreateChat: FC = () => {
   const navigation = useNavigation();
   const { } = useHomeState();
   const a = 5;

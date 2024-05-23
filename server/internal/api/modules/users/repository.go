@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/roflan.io/api/base"
 	"github.com/roflan.io/models"
+	"github.com/roflan.io/paginator"
 	"github.com/roflan.io/pg"
 )
 
@@ -66,6 +67,34 @@ func (user *UserRepository) GetTelegramIdsByLabel(label, value string) ([]models
 
 	if err := pg.GDB().Instance.Table(models.TelegramIdsTable).Where(fmt.Sprintf("%s = ?", label), value).Scan(&result); err.Error != nil {
 		return result, err.Error
+	}
+
+	return result, nil
+}
+
+func (user *UserRepository) GetPaginatedUserList(queries map[string][]string) (paginator.ObjectPaginator, error) {
+	result := paginator.NewObjectPaginator()
+
+	pager := paginator.NewPaginator()
+
+	if err := pager.STable(models.UsersTable).SSelect([]string{
+		"phone",
+		"id",
+		"user_hash",
+		"username",
+		"first_name",
+		"last_name",
+		"patronymic",
+		"role",
+		"sex",
+		"university",
+		"details",
+		"country",
+		"city",
+		"active",
+		"birthday",
+	}).Pick(queries).Ignite(&result); err != nil {
+		return result, err
 	}
 
 	return result, nil

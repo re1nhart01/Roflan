@@ -13,12 +13,11 @@ type chatDateSeparatorProps = {
 const { Wrapper, Text, Container } = chatDateSeparatorStyles;
 
 export const ChatDateSeparator: FC<chatDateSeparatorProps> = ({ data }) => {
-  const currentDate = new Date(data.createdAt);
-  const { t } = useTranslation();
+  const currentDate = new Date(data.created_at);
   return (
     <Container>
       <Wrapper>
-        <Text>{getTimeTextByDate(t, currentDate)}</Text>
+        <Text>{getTimeTextByDate(currentDate)}</Text>
       </Wrapper>
     </Container>
   );

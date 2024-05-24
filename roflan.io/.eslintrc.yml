@@ -23,10 +23,12 @@ rules:
   }]
   no-with: off
   no-unused-vars: off
+  no-case-declarations: off
   no-empty-pattern: off
   no-multiple-empty-lines: [2, { 'max': 1, 'maxBOF': 0, 'maxEOF': 0 }]
   prefer-const: [2, { 'destructuring': all }]
   no-path-concat: 2
+  jsx-a11y/aria-role: off
   global-require: 0
   no-class-assign: 0
   import/no-dynamic-require: 0

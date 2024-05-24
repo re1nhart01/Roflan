@@ -13,6 +13,8 @@ export const useVerifyState = () => {
   const {
     app: { setIsLoad },
     auth: { setIsAuth, validateCode },
+    user: { getMe, getUsersToCreateChat },
+    chats: { getTopics },
   } = useStoreActions((state) => state);
   const [error, setError] = useState('');
   const [code, setCode] = useState('');
@@ -32,6 +34,8 @@ export const useVerifyState = () => {
         phone,
         code,
       });
+      await Promise.allSettled([getTopics(), getMe(), getUsersToCreateChat()]);
+      await Promise.allSettled([]);
     } catch (e) {
       console.log(e instanceof InvalidResponseHandler);
       if (e instanceof InvalidResponseHandler) {

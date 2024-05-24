@@ -1,14 +1,15 @@
-import { action, thunk } from 'easy-peasy';
+import { Actions, action, thunk } from 'easy-peasy';
 import { requester } from '@core/http/requester.ts';
 import { Modules } from '@core/http/misc.ts';
 import axios from 'axios';
 import { InvalidResponseHandler, handler } from '@core/http/respo.ts';
 import { handleUnexpectedError } from '@core/store/helpers/functions.ts';
 import NativeMainModule from '@tm/NativeMainModule.ts';
-import { RefreshTokenResponse } from '@type/definitions.ts';
+import { BaseRequest, RefreshTokenResponse } from '@type/definitions.ts';
 import { tokensCacheStore } from '@core/caching';
+import { filteredFromActionsModel } from '@core/helpers/functions.ts';
+import { StoreModel } from '@core/store/store.type.ts';
 import { IAuthStore } from './auth.store.type';
-import {filteredFromActionsModel} from "@core/helpers/functions.ts";
 
 export const authStore: IAuthStore = {
   isAuth: false,
@@ -40,12 +41,11 @@ export const authStore: IAuthStore = {
   }),
   validateCode: thunk(async (actions, payload, helpers) => {
     try {
-      const { data } = await requester<RefreshTokenResponse>(`${Modules.auth}/verify`, 'POST', {
+      const response = await requester<BaseRequest<RefreshTokenResponse>>(`${Modules.auth}/verify`, 'POST', {
         'client-secret': NativeMainModule.getEnv('CLIENT_KEY'),
         'client-value': NativeMainModule.getEnv('CLIENT_VALUE'),
       }, payload, false);
-
-      await tokensCacheStore.getAndSetTokenData(data);
+      if (response.data.response) await tokensCacheStore.getAndSetTokenData(response.data.response);
       actions.setIsAuth(true);
     } catch (e) {
       if (axios.isAxiosError(e)) {
@@ -54,6 +54,18 @@ export const authStore: IAuthStore = {
       await handleUnexpectedError();
       console.log(4);
       throw new Error('loginUser abort');
+    }
+  }),
+  logout: thunk(async (actions, _, helpers) => {
+    try {
+      const storeActions = helpers.getStoreActions() as Actions<StoreModel>;
+      await tokensCacheStore.destroy();
+      actions.reset();
+      storeActions.user.reset();
+      storeActions.chats.reset();
+      actions.setIsAuth(false);
+    } catch (e) {
+      console.warn('logout ex');
     }
   }),
   reset: action((state) => {

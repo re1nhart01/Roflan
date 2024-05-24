@@ -10,6 +10,7 @@ type IUserHandler interface {
 	AliveHandler(context *gin.Context)
 	GetMyProfile(context *gin.Context)
 	GetUserList(context *gin.Context)
+	UpdateUserFields(context *gin.Context)
 }
 
 func UserRoute(engine *gin.Engine, handler IUserHandler) {
@@ -17,5 +18,6 @@ func UserRoute(engine *gin.Engine, handler IUserHandler) {
 	{
 		router.GET(MeRoute, handler.GetMyProfile)
 		router.GET(List, handler.GetUserList)
+		router.PATCH(UpdateMe, handler.UpdateUserFields)
 	}
 }

@@ -6,14 +6,8 @@ import { RootStackParams, Routes } from '@src/modules/navigation/helpers/Routes.
 import { useStoreActions, useStoreState } from '@core/store/store.ts';
 
 export const useWelcomeState = () => {
-  console.log(NativeCppModule?.getEnv('TERMS_OF_USE'));
   const navigation = useNavigation<NavigationProp<RootStackParams>>();
-  const {
-    auth: { setIsAuth },
-  } = useStoreActions((state) => state);
-  const {
-    auth: { isAuth },
-  } = useStoreState((state) => state);
+
   const goToTermsOfUse = useCallback(async () => {
     const termsEnv = NativeCppModule?.getEnv('TERMS_OF_USE');
     if (termsEnv) {
@@ -24,10 +18,6 @@ export const useWelcomeState = () => {
   const goToSignIn = useCallback(() => {
     navigation.navigate(Routes.SignInScreen);
   }, [navigation]);
-
-  useEffect(() => {
-    setIsAuth(false);
-  }, [setIsAuth]);
 
   return {
     goToTermsOfUse,

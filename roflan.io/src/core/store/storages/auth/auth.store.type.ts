@@ -7,5 +7,6 @@ export interface IAuthStore {
     loginUser: Thunk<this, { phone: string; password: string }>;
     registerUser: Thunk<this, UserRegisterModel>;
     validateCode: Thunk<this, { phone: string; code: string }>;
+    logout: Thunk<this>
     reset: Action<this>;
 }

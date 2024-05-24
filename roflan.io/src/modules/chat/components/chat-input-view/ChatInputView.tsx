@@ -11,6 +11,7 @@ import { Keyboard } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Localization } from '@core/constants/localization.ts';
+import { Image } from 'native-base';
 import { chatInputViewStyles } from './chatInputView.styles';
 
 type chatInputViewProps = {
@@ -87,7 +88,6 @@ const ChatInputView: FC<chatInputViewProps> = ({ onSendMessage }) => {
             textBreakStrategy="highQuality"
             style={{ height: inputHeight }}
             multiline
-            renderToHardwareTextureAndroid
             placeholder={`${Localization.components.text_input_placeholder}`}
             onContentSizeChange={onContentSizeChanged}
           />
@@ -95,7 +95,7 @@ const ChatInputView: FC<chatInputViewProps> = ({ onSendMessage }) => {
           {/*  <ChatButtonIcon type="attach" /> */}
           {/* </ButtonView> */}
           <ButtonView onPress={handleSendMessage}>
-            <ChatButtonIcon type="send" />
+            <Image maxW="25" maxH="25" source={require('@assets/png/send.png')} alt="send.png" />
           </ButtonView>
         </ActionsRow>
       </Wrapper>

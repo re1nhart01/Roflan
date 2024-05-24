@@ -1,12 +1,12 @@
-import { defaultTo, equals, isNil } from "ramda";
-import type { FC } from "react";
-import React, { useMemo } from "react";
+import { defaultTo, equals, isNil } from 'ramda';
+import type { FC } from 'react';
+import React, { useMemo } from 'react';
 
-import { getExactTime } from "modules/chat/helpers/functions";
-import { UIMessageType } from "modules/chat/helpers/types";
-import type { ChatMessageType } from "modules/chat/store/chat.store.types";
-
-import { textMessageViewStyles } from "./textMessageView.styles";
+import { UIMessageType } from '@src/modules/chat/helpers/types.ts';
+import { getExactTime } from '@src/modules/chat/helpers/functions.ts';
+import { ChatMessageType } from '@core/store/storages/chat/chat.store.types.ts';
+import { textMessageViewStyles } from './textMessageView.styles';
+import {View} from "react-native";
 
 type textMessageViewProps = {
   messageData: ChatMessageType;
@@ -31,27 +31,31 @@ const TextMessageView: FC<textMessageViewProps> = ({
   myUserId,
 }) => {
   const {
-    sender: {
-      user: { firstName, lastName },
+    user_owner: {
+      first_name, last_name, patronymic,
     },
     uiMessageType,
     isLocal,
   } = messageData;
   const isMyMessage = useMemo(
-    () => equals(myUserId, messageData.sender?.user.id),
-    [messageData.sender?.user.id, myUserId]
+    () => equals(myUserId, messageData.user_owner.user_hash),
+    [messageData.user_owner.user_hash, myUserId],
   );
 
   const renderMessageLabel = () => {
-    if (isMyMessage) return null;
-    return isNil(uiMessageType) || uiMessageType === UIMessageType.first ? (
+    if (isMyMessage) return <View />;
+    return (
       <NameLabelText>
-        {firstName} {lastName}
+        {first_name}
+        {' '}
+        { patronymic }
+        {' '}
+        {last_name}
       </NameLabelText>
-    ) : null;
+    );
   };
 
-  const timeOfMessage = getExactTime(new Date(messageData.createdAt));
+  const timeOfMessage = getExactTime(new Date(messageData.created_at));
   return (
     <Wrapper isMyMessage={isMyMessage}>
       <MessageTile>
@@ -67,13 +71,6 @@ const TextMessageView: FC<textMessageViewProps> = ({
               <DateText>{timeOfMessage}</DateText>
             </DateWrapper>
           </InnerContainer>
-          {isNil(uiMessageType) || uiMessageType === UIMessageType.end ? (
-            <MessageFang
-              type="messageFang"
-              isMyMessage={isMyMessage}
-              uiMessageType={uiMessageType}
-            />
-          ) : null}
         </MessageContainer>
       </MessageTile>
     </Wrapper>

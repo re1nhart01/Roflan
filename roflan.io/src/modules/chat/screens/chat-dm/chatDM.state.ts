@@ -1,52 +1,47 @@
-import {
-  useFocusEffect,
-  useNavigation,
-} from '@react-navigation/native';
+import { NavigationProp, Route, useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import { defaultTo, isNil } from 'ramda';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FlatList, InteractionManager } from 'react-native';
-import { Routes } from '@src/modules/navigation/helpers/Routes.ts';
+import { RootStackParams, Routes } from '@src/modules/navigation/helpers/Routes.ts';
 import { useStoreActions, useStoreState } from '@core/store/store.ts';
-import {
-  chatScrollButtonForwardProps,
-} from '@src/modules/chat/components/chat-scroll-button/ChatScrollButton.tsx';
-import { ChatDataTypeUnion } from '@src/modules/chat/helpers/types.ts';
+import { chatScrollButtonForwardProps } from '@src/modules/chat/components/chat-scroll-button/ChatScrollButton.tsx';
+import { ChatDataType, ChatDataTypeUnion, MESSAGES_PER_PAGE } from '@src/modules/chat/helpers/types.ts';
 import { useChatEmitter } from '@src/modules/chat/helpers/hooks/useChatEmitter.ts';
-import { getMessagingURL } from '@src/modules/chat/helpers/functions.ts';
+import { createMessage, createTransferMessage, getMessagingURL } from '@src/modules/chat/helpers/functions.ts';
 import { useWebsocket } from '@core/hooks/useWebsocket.ts';
 import { tokensCacheStore } from '@core/caching';
+import { ChatEvents, ChatMessageType } from '@core/store/storages/chat/chat.store.types.ts';
 
 export const useChatDMState = () => {
-  // const {
-  //   params: {  },
-  // } = useRoute<Route<string, RootStackParams[Routes.ChatDM]>>();
   const {
-    // common: { setIsGlobalLoading },
-    // chats: {
-    //   getMessageList,
-    //   addDummyMessage,
-    //   cleanMessageList,
-    //   getFirstMessageId,
-    //   getUnreadMessagesCounter,
-    //   getTopics,
-    // },
+    params: { topicId },
+  } = useRoute<Route<string, RootStackParams[Routes.ChatScreen]>>();
+  const {
+    app: { setIsLoad },
+    chats: {
+      getMessageList,
+      addDummyMessage,
+      cleanMessageList,
+      getFirstMessageId,
+      getTopics,
+    },
   } = useStoreActions((state) => state);
   const {
-    // chats: { messagesList, totalPages },
-    // profile: { userProfile },
+    user: { userData },
+    chats: { messagesList, totalPages, topicsDictionary },
   } = useStoreState((state) => state);
-
-  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
-  const navigation = useNavigation();
-  const myUserId = useMemo(() => defaultTo('', userProfile?.id), [userProfile]);
+  const navigation = useNavigation<NavigationProp<RootStackParams>>();
+  const myUserId = useMemo(() => defaultTo('', userData?.user_hash), [userData]);
   const currentPage = useRef<number>(1);
   const scrollListRef = useRef<FlatList<ChatDataTypeUnion>>(null);
   const chatButtonRef = useRef<chatScrollButtonForwardProps>(null);
   const isInitialLoad = useRef<boolean>(true);
+  const userNotMe = topicsDictionary[topicId].users.find((el) => el.user_hash !== myUserId);
+  const chatName = topicsDictionary[topicId].is_single ? `${userNotMe?.first_name} ${userNotMe?.patronymic} ${userNotMe?.last_name}` : topicsDictionary[topicId].name;
 
-  const { onMessage, ...emitter } = useChatEmitter(myUserId);
+  const { onMessage, ...emitter } = useChatEmitter(myUserId, topicId);
   const chatURL = getMessagingURL(topicId);
   const { connect, closeSocket, timerId, transferData, isConnect } =
     useWebsocket(
@@ -65,23 +60,32 @@ export const useChatDMState = () => {
     );
 
   const goToChatAttachments = useCallback(() => {
-    navigation.navigate(Routes.VerifyScreen);
-  }, [navigation, requestId, topicId]);
+    console.log('zxc');
+  }, [navigation]);
 
   const onSendMessage = useCallback(
     async (value: string) => {
       const lastMessage = messagesList[0] as ChatMessageType;
-      if (isNil(topicId) || isNil(userProfile)) return;
+      if (isNil(topicId) || isNil(userData)) return;
       const newMessage = createMessage(
         value,
         defaultTo(0, lastMessage?.id),
         ChatDataType.text,
         [],
         topicId,
-        userProfile.id,
+        {
+          user_hash: userData.user_hash,
+          details: userData.details,
+          first_name: userData.first_name,
+          last_name: userData.last_name,
+          patronymic: userData.patronymic,
+          role: userData.role,
+          university: userData.university,
+          username: userData.username,
+        },
       );
       addDummyMessage(newMessage);
-      const transferMsg = createTransferMessage(ChatDataType.text, value);
+      const transferMsg = createTransferMessage(ChatEvents.SendMessage, value);
       await transferData(transferMsg);
 
       InteractionManager.runAfterInteractions(() => {
@@ -91,65 +95,35 @@ export const useChatDMState = () => {
         });
       });
     },
-    [messagesList, topicId, userProfile, addDummyMessage, transferData],
+    [messagesList, topicId, userData, addDummyMessage, transferData],
   );
 
   const onChatLoad = useCallback(async () => {
     try {
       if (!isNil(topicId)) {
         await Promise.all([
-          KeyboardModeNative.executeModule('updateMode', [
-            SoftInputMode.RESIZE,
-          ]),
           getMessageList({
             topicId,
-            page: 1,
+            page: 0,
             itemsPerPage: MESSAGES_PER_PAGE,
           }),
         ]);
         await connect();
-        if (isValidStatus) {
-          // logic to fire seen event
-          const lastMsgId = getFirstMessageId();
-          !isNil(lastMsgId) &&
+        const lastMsgId = getFirstMessageId();
+        !isNil(lastMsgId) &&
             (await transferData(
-              createTransferMessage(ChatDataType.seen, `${lastMsgId}`),
+              createTransferMessage(ChatEvents.ReadAllMessage, `${lastMsgId}`),
             ));
-        }
       }
     } catch (e) {
-      sentrySendCustomEvent(
-        SENTRY_CUSTOM_EVENTS_MESSAGES.onChatLoadError,
-        'error',
-        {
-          now: Date.now(),
-          topicId,
-          requestId,
-          chatURL: await chatURL,
-          errorMsg: e?.toString(),
-        },
-      );
-    } finally {
+   } finally {
       InteractionManager.runAfterInteractions(() => {
-        setIsGlobalLoading(false);
+        setIsLoad(false);
       });
       isInitialLoad.current = false;
-      await Promise.allSettled([getUnreadMessagesCounter(), getTopics()]);
+      await Promise.allSettled([getTopics()]);
     }
-  }, [
-    chatURL,
-    connect,
-    getFirstMessageId,
-    getMessageList,
-    getTopics,
-    getUnreadMessagesCounter,
-    isValidStatus,
-    requestId,
-    sentrySendCustomEvent,
-    setIsGlobalLoading,
-    topicId,
-    transferData,
-  ]);
+  }, [connect, getFirstMessageId, getMessageList, getTopics, setIsLoad, topicId, transferData]);
 
   const onScrollTopReached = useCallback(async () => {
     const currPage = currentPage.current;
@@ -176,58 +150,23 @@ export const useChatDMState = () => {
     }
   }, [getMessageList, topicId, totalPages]);
 
-  useCustomBackHandler();
-
-  useFocusEffect(
-    useCallback(() => {
-      setIsGlobalLoading(true);
-      onChatLoad().then();
-      return () => {
-        closeSocket();
-        cleanMessageList();
-        currentPage.current = 1;
-        KeyboardModeNative.executeModule('updateMode', [
-          SoftInputMode.PAN,
-        ]).then();
-        if (!isNil(timerId.current)) clearTimeout(timerId.current);
-      };
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []),
-  );
-
   useEffect(() => {
-    InteractionManager.runAfterInteractions(() => {
-      setRequestHeader({
-        currentText: t(localization.chats.request_chat),
-        currentHeaderTitle: `№ ${requestId}`,
-        HeaderRight: CustomHeaderButton.bind(this, {
-          onClickCustom: goToChatAttachments,
-          iconKey: 'attachment',
-          disabled: true,
-        }),
-        navigateBackCustom: () =>
-          goBackFromPush(Routes.ActiveRequest, {
-            openedFromPush: true,
-            notificationId,
-            id: +requestId,
-            type: RequestsType.Order,
-          }),
-      });
-    });
-  }, [
-    goBackFromPush,
-    goToChatAttachments,
-    notificationId,
-    requestId,
-    setRequestHeader,
-    t,
-  ]);
+    setIsLoad(true);
+    onChatLoad().then();
+    return () => {
+      closeSocket();
+      cleanMessageList();
+      currentPage.current = 1;
+      if (!isNil(timerId.current)) clearTimeout(timerId.current);
+    };
+  }, []);
 
   return {
-    requestId,
     messagesList,
     onSendMessage,
     myUserId,
+    topicId,
+    chatName,
     isLoading,
     setIsLoading,
     currentPage,
@@ -235,6 +174,5 @@ export const useChatDMState = () => {
     scrollListRef,
     chatButtonRef,
     isConnect,
-    isValidStatus,
   };
 };

@@ -5,10 +5,11 @@ import { SVGIcon } from '@components/atoms/icon/Icon';
 
 import { Localization } from '@core/constants/localization.ts';
 import { useStoreState } from '@core/store/store.ts';
+import { Text } from 'native-base';
 import { EmptyScreenStyles } from './emptyScreen.styles';
 import type { EmptyScreenProps } from './emptyScreen.types';
 
-const { Wrapper, Text } = EmptyScreenStyles;
+const { Wrapper } = EmptyScreenStyles;
 
 export const EmptyScreen = ({
   Img,
@@ -39,8 +40,8 @@ export const EmptyScreen = ({
     >
       {iconType && !isNetworkError && text ? (
         <>
-          <SVGIcon Img={Img} type={iconType} />
-          <Text>{text}</Text>
+          <SVGIcon size={200} width={200} height={200} Img={Img} type={iconType} />
+          <Text mt="10" color="white">{text}</Text>
         </>
       ) : (
         <>

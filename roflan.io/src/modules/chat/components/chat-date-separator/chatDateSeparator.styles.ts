@@ -20,7 +20,7 @@ export const chatDateSeparatorStyles = {
   Text: styled.Text`
     font-size: 12px;
     font-weight: 300;
-    color: ${theme.colors.secondary['300']}
+    color: ${theme.colors.secondary['300']};
     line-height: 12px;
   `,
 };

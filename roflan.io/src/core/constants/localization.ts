@@ -15,11 +15,15 @@ export const Localization = {
     password: 'Password:',
     username: 'Username:',
     firstName: 'First Name:',
+    chatName: 'Chat Name:',
     lastName: 'Last Name',
     patronymic: 'Patronymic:',
     sex: 'Sex:',
     description: 'Description:',
     role: 'Role:',
+    country: 'Country:',
+    city: 'City:',
+    university: 'University and some other info about:',
   },
   auth: {
     signIn: {
@@ -40,16 +44,29 @@ export const Localization = {
     \n Press Start and after that copy and text below and put put your phone number. Example  "/register +38000000000"`,
     qrExample: '/register +38000000000',
     copied: 'Copied to Clipboard!',
+    userRegistered: 'User successfully registered',
   },
   components: {
     text_input_placeholder: 'Write your message',
     no_messages_yet: 'No Messages Yet :(',
+    userProfileEdit: 'Your User Profile',
+    accordions: {
+      basicInfo: 'Basic Info (not changeable)',
+      universityInfo: 'Education info',
+      locationInfo: 'Location Info',
+      nameInfo: 'Name Info',
+    },
+    change: 'Change',
+    isSingle: 'Single Chat',
+    isNotSingle: 'Group Chat',
+    users: 'Users:',
+    createChat: 'Create Chat',
   },
   time: {
     today: 'Today',
     yesterday: 'Yesterday',
   },
   hintMessages: {
-
+    startChatting: 'Start Chatting with someone',
   },
 };

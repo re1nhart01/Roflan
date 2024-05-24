@@ -8,9 +8,9 @@ import { InteractionManager } from 'react-native';
 import { DEVICE_HEIGHT } from '@core/constants/defaults.ts';
 import { EmptyScreen } from '@components/molecules/empty-screen/EmptyScreen.tsx';
 import { Localization } from '@core/constants/localization.ts';
+import type { ChatMessageType } from '@core/store/storages/chat/chat.store.types.ts';
 import type { ChatDataTypeUnion } from '../../helpers/types';
 import { MESSAGES_PER_PAGE } from '../../helpers/types';
-import type { ChatMessageType } from '@core/store/storages/chat/chat.store.types.ts';
 import ChatListLoader from '../chat-list-loader/ChatListLoader';
 import type { chatScrollButtonForwardProps } from '../chat-scroll-button/ChatScrollButton';
 import ChatScrollButton from '../chat-scroll-button/ChatScrollButton';
@@ -21,9 +21,9 @@ const { FlashListViewWrapper, ChatFlashList } = chatListViewStyles;
 
 type chatListViewProps = {
   data: ChatDataTypeUnion[];
-  requestId: string | number;
   myUserId: string;
   isLoading: boolean;
+  topicId: string;
   setIsLoading: (v: boolean) => void;
   onScrollTopReached: () => Promise<void>;
   scrollListRef: RefObject<FlatList<ChatDataTypeUnion>>;
@@ -34,22 +34,21 @@ const TRIGGER_PERCENT = 14;
 
 const ChatListView: FC<chatListViewProps> = ({
   data,
-  requestId,
   myUserId,
   isLoading,
   onScrollTopReached,
   scrollListRef,
   chatButtonRef,
+  topicId,
 }) => {
   const { t } = useTranslation();
-  const headerHeight = useHeaderHeight();
   const isNotTriggered = useRef<boolean>(false);
   const keyExtractor = (
     item: ChatDataTypeUnion | ChatMessageType,
     index: number,
   ) => {
-    if ('sender' in item) {
-      return `__message__${item.sender.user.id}_${item.id}_${item.topicId}__${index}`;
+    if ('user_owner' in item) {
+      return `__message__${item.user_owner.user_hash}_${item.id}_${item.topic_hash_id}__${index}`;
     }
     return `${item.id}`;
   };
@@ -111,8 +110,10 @@ const ChatListView: FC<chatListViewProps> = ({
     onScrollTopReached?.();
   }, [onScrollTopReached]);
 
+  console.log(data);
+
   return (
-    <FlashListViewWrapper headerHeight={headerHeight}>
+    <FlashListViewWrapper>
       <ChatScrollButton
         onPress={handleOnPressChatListButton}
         ref={chatButtonRef}
@@ -122,11 +123,11 @@ const ChatListView: FC<chatListViewProps> = ({
         bounces
         inverted
         ref={scrollListRef}
+        extraData={topicId}
         nestedScrollEnabled={false}
         data={data}
         onEndReached={handleScrollEndReached}
         onScroll={handleOnScrollEvent}
-        extraData={requestId}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
         ListEmptyComponent={(
@@ -135,7 +136,7 @@ const ChatListView: FC<chatListViewProps> = ({
             iconType="noInternet"
             Img={require('@assets/png/no-message.png')}
             text={Localization.components.no_messages_yet}
-            marginTop={DEVICE_HEIGHT / 3.5}
+            marginTop={DEVICE_HEIGHT / 2}
           />
         )}
         ListFooterComponent={<ChatListLoader visible={isLoading} />}
@@ -148,11 +149,6 @@ const ChatListView: FC<chatListViewProps> = ({
         removeClippedSubviews={false}
         maintainVisibleContentPosition={{
           minIndexForVisible: MESSAGES_PER_PAGE,
-        }}
-        viewabilityConfig={{
-          waitForInteraction: false,
-          itemVisiblePercentThreshold: 100,
-          viewAreaCoveragePercentThreshold: 100,
         }}
       />
     </FlashListViewWrapper>

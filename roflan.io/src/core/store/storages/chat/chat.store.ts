@@ -9,6 +9,7 @@ import {
 import { arrayToDictionary, filteredFromActionsModel } from '@core/helpers/functions.ts';
 import { StoreModel } from '@core/store/store.type.ts';
 import { requester } from '@core/http/requester.ts';
+import { BasePaginatorResponse, BaseRequest } from '@type/definitions.ts';
 import type {
   ChatMessageType,
   ChatTopicType,
@@ -17,12 +18,11 @@ import type {
   MessagingAPIPagingType,
   UnreadCounterObject,
 } from './chat.store.types.ts';
+import {Alert} from "react-native";
 
 const chatStore: ChatsModel = {
   topics: [],
   messagesList: [],
-  unreadCounterList: [],
-  totalUnreadMessagesCount: 0,
   totalPages: 0,
   messagesCounterDictionary: {},
   topicsDictionary: {},
@@ -30,7 +30,7 @@ const chatStore: ChatsModel = {
     state.topics = payload;
     state.topicsDictionary = arrayToDictionary<ChatTopicType>(
       payload,
-      'externalId',
+      'topic_hash',
     );
   }),
   updateSpecificCounter: action((state, payload) => {
@@ -42,45 +42,42 @@ const chatStore: ChatsModel = {
       topicId: payload.topicId,
     };
   }),
-  rollTopic: thunk(async (state, payload, { getState }) => {
-    const modelState = getState();
-    const isExists = modelState.topicsDictionary[payload];
-    if (!isExists) {
-      await state.addTopic({ externalId: `${payload}` });
-    }
-  }),
-  addTopic: thunk(async (state, { externalId }, { getStoreState }) => {
+  addTopic: thunk(async (state, { userIds, avatarBucket, isSingle, name }, { getStoreState }) => {
     try {
       const storeState = getStoreState() as StoreModel;
-
+      const validUserIds = isSingle ? [userIds[0]] : userIds;
       const addTopicBody = {
-        order: `/api/orders/${externalId}`,
+        userIds: validUserIds,
+        avatarBucket,
+        name,
+        isSingle,
       };
-
-      const { data } = await requester<ChatTopicType>(
-        'orders/chat/topic',
+      console.log(addTopicBody);
+      const { data } = await requester<BaseRequest<ChatTopicType>>(
+        '/topic',
         'POST',
         {},
         addTopicBody,
         true,
       );
-      const editedNewTopic: ChatTopicType = {
-        topicId: data.topicId,
-        id: data.topicId,
-        createdAt: data.createdAt,
-        name: `${data.id}`,
-        externalId: `${data.id}`,
-        updatedAt: data.createdAt,
-      };
-      const topicsWithNew = [
-        editedNewTopic,
-        ...defaultTo([], storeState.chats.topics),
-      ];
-      state.setTopics(topicsWithNew);
-      return data;
+      if (data.response) {
+        const isExists = storeState.chats.topicsDictionary[data.response.topic_hash];
+        if (!isExists) {
+          const topicsWithNew = [
+            data.response,
+            ...defaultTo([], storeState.chats.topics),
+          ];
+          state.setTopics(topicsWithNew);
+        } else {
+          Alert.alert('Warning', 'Chat with this user is already exists!');
+        }
+      }
+
+      return data?.response;
     } catch (e) {
       if (axios.isAxiosError(e)) {
-        /* empty */ } else {
+        /* empty */
+      } else {
         console.warn('Not Axios Error');
       }
       throw new Error('Aborting addTopic');
@@ -90,7 +87,7 @@ const chatStore: ChatsModel = {
     const storeState = getStoreState() as StoreModel;
     if (storeState.chats.topics) {
       const item: ChatTopicType | undefined = storeState.chats.topics.find(
-        (topic: ChatTopicType) => `${topic.externalId}` === `${payload}`,
+        (topic: ChatTopicType) => `${topic.topic_hash}` === `${payload}`,
       );
       return defaultTo(null, item);
     }
@@ -98,14 +95,14 @@ const chatStore: ChatsModel = {
   }),
   getTopics: thunk(async (actions) => {
     try {
-      const { data } = await requester<MessagingAPIPagingType<ChatTopicType>>(
-        'topics',
+      const { data } = await requester<BasePaginatorResponse<ChatTopicType>>(
+        '/topic',
         'GET',
         {},
         undefined,
         true,
       );
-      actions.setTopics(data.data);
+      if (data.data) actions.setTopics(data.data);
 
       return data;
     } catch (e) {
@@ -138,7 +135,7 @@ const chatStore: ChatsModel = {
       if (
         msg.isLocal &&
         msg.body === payload.body &&
-        msg.sender.user.id === payload.sender.user.id
+        msg.user_hash_id === payload.user_hash_id
       ) {
         msg.id = payload.id;
         return true;
@@ -154,23 +151,27 @@ const chatStore: ChatsModel = {
       try {
         const storeState = getStoreState() as StoreModel;
         const { data } = await requester<
-          MessagingAPIPagingType<ChatMessageType>
+          BasePaginatorResponse<ChatMessageType>
         >(
-          `messages?limit=${itemsPerPage}&page=${page}&filter=topic.id||$eq||${topicId}&sort=createdAt,DESC`,
+          `/messages?limit=${itemsPerPage}&page=${page}&where=topic_hash_id['${topicId}']&order=created_at^desc`,
           'GET',
           {},
           undefined,
           true,
         );
-        const reorderedList = splitMessagesByDelimiter(
-          storeState.chats.messagesList,
-          data.data,
-        );
-        actions.setMessageList(reorderedList);
-        actions.setTotalPages(defaultTo(1, data.pageCount));
+        if (data.data) {
+          const reorderedList = splitMessagesByDelimiter(
+            defaultTo([], storeState.chats.messagesList),
+            data.data,
+          );
+          actions.setMessageList(reorderedList);
+          actions.setTotalPages(defaultTo(1, data.total_pages));
+          console.log(data.data);
+        }
 
         return data;
       } catch (e) {
+        console.log(e);
         if (axios.isAxiosError(e)) {
           /* empty */
         } else {
@@ -186,6 +187,7 @@ const chatStore: ChatsModel = {
   addDummyMessage: action((state, payload) => {
     const messageListLength = state.messagesList.length;
     const lastMessage = state.messagesList[0];
+    console.log(lastMessage, payload, messageListLength, 'ZXCZXCZX');
     const withSeparator = addMessageWithSeparation(
       lastMessage,
       payload,
@@ -196,34 +198,6 @@ const chatStore: ChatsModel = {
   getFirstMessageId: thunk((_, __, { getStoreState }) => {
     const storeState = getStoreState() as StoreModel;
     return defaultTo(null, storeState.chats.messagesList?.[0]?.id);
-  }),
-  getUnreadMessagesCounter: thunk(async (actions) => {
-    try {
-      const { data } = await requester<MessagesCountAPIType[]>(
-        'topics/messages/count',
-        'GET',
-        {},
-        undefined,
-        true,
-      );
-      const response = defaultTo({ total: 0, count: [] }, data[0]);
-      actions.setTotalUnreadMessagesCount(defaultTo([], response.count));
-      actions.setUnreadCounterList(defaultTo(0, +response.total));
-    } catch (e) {
-      if (axios.isAxiosError(e)) {
-        /* empty */
-      } else {
-        console.warn('Not Axios Error');
-      }
-      throw new Error('Aborting getUnreadMessagesCounter');
-    }
-  }),
-  setUnreadCounterList: action((state, payload) => {
-    state.totalUnreadMessagesCount = +payload;
-  }),
-  setTotalUnreadMessagesCount: action((state, payload) => {
-    state.unreadCounterList = payload;
-    state.messagesCounterDictionary = arrayToDictionary(payload, 'topicId');
   }),
   reset: action((state) => {
     const filteredNewsModel = filteredFromActionsModel(chatStore);

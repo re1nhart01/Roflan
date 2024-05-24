@@ -31,13 +31,13 @@ export const signUpForm = new FormadjoFormer<ISignUpFormTemplate>({
     .setIsRequired(true)
     .setMinLength(5)
     .setMaxLength(500),
-  role: new FormadjoField('role', 'string')
+  role: new FormadjoField('role', 'number')
     .setIsRequired(true),
-  firstName: new FormadjoField('firstName', 'string')
+  first_name: new FormadjoField('first_name', 'string')
     .setIsRequired(true)
     .setMinLength(2)
     .setMaxLength(40),
-  lastName: new FormadjoField('lastName', 'string')
+  last_name: new FormadjoField('last_name', 'string')
     .setIsRequired(true)
     .setMinLength(2)
     .setMaxLength(40),

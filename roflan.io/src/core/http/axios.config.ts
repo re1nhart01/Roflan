@@ -31,7 +31,7 @@ axios.interceptors.request.use(
           'Content-Type',
           defaultTo('application/json', config.headers?.getContentType?.()),
         ),
-        assoc('Authorization', `Bearer ${access_token}`),
+        assoc('Authorization', `spider$${access_token}`),
       )(config.headers);
     }
 

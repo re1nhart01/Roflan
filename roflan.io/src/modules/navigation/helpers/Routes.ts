@@ -4,6 +4,9 @@ export enum Routes {
     SignUpScreen = 'SignUp',
     VerifyScreen = 'VerifyScreen',
     HomeScreen = 'Home',
+    UserProfile = 'User Profile',
+    ChatScreen = 'Chat',
+    CreateChatScreen = "Create Chat",
 }
 
 export type RootStackParams = {
@@ -14,6 +17,9 @@ export type RootStackParams = {
         phone: string;
     }
     [Routes.HomeScreen]: undefined;
+    [Routes.ChatScreen]: { topicId: string };
+    [Routes.UserProfile]: undefined;
+    [Routes.CreateChatScreen]: undefined;
 }
 
 export const DrawerBarRoutes = [] as const;

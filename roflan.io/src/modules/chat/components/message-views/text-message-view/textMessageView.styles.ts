@@ -1,8 +1,8 @@
 import { equals } from 'ramda';
 import styled from 'styled-components/native';
 import { theme } from 'native-base';
-import { UIMessageType } from '@src/modules/home/screens/chat/helpers/types.ts';
 import { SVGIcon } from '@components/atoms/icon/Icon.tsx';
+import { UIMessageType } from '@src/modules/chat/helpers/types.ts';
 
 export const textMessageViewStyles = {
   Wrapper: styled.View<{ isMyMessage: boolean }>`
@@ -18,9 +18,9 @@ export const textMessageViewStyles = {
     flex-direction: column;
   `,
   ContentText: styled.Text`
-    font-size: 14px;
+    font-size: 18px;
     font-weight: 400;
-    color: ${theme.colors.white}
+    color: ${theme.colors.black};
     line-height: 20;
     z-index: 8;
     max-width: 220px;
@@ -35,10 +35,10 @@ export const textMessageViewStyles = {
     isMyMessage: boolean;
     uiMessageType: UIMessageType;
   }>`
-    opacity: ${({ isLocal }) => (isLocal ? 0.5 : 1)}
+    opacity: ${({ isLocal }) => (isLocal ? 0.5 : 1)};
     min-width: 60px;
-    max-width: 280px;
-    background-color: ${({ isMyMessage }) => theme.colors[!isMyMessage ? 'primary' : 'tertiary']['400']};
+    max-width: 500px;
+    background-color: white;
     justify-content: space-between;
     flex-direction: row;
     flex-wrap: wrap;
@@ -87,15 +87,15 @@ export const textMessageViewStyles = {
     justify-content: flex-end;
   `,
   DateText: styled.Text`
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 400;
-    color: ${theme.colors.amber['300']}
+    color: ${theme.colors.coolGray['400']};
     line-height: 20;
   `,
   NameLabelText: styled.Text`
     font-size: 12px;
     font-weight: 400;
-    color: ${theme.colors.gray['300']};
+    color: ${theme.colors.primary['300']};
     margin-top: 15px;
     line-height: 12;
     margin-bottom: 8px;

@@ -7,10 +7,10 @@ export interface ISignUpFormTemplate {
     username: string;
     phone: string;
     password: string;
-    firstName: string;
-    lastName: string;
+    first_name: string;
+    last_name: string;
     patronymic: string;
-    role: string;
+    role: number;
     sex: string;
     description: string;
 }

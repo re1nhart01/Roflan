@@ -1,109 +1,61 @@
-import { equals } from "ramda";
+import { equals } from 'ramda';
 
-import { SENTRY_CUSTOM_EVENTS_MESSAGES } from "helpers/constants";
-import { useSentry } from "services/analytics/sentry/useSentry";
-import { useStoreActions } from "store/store";
-
-import type {
+import {
+  ChatEvents,
   ChatMessageType,
   EventMessage,
-} from "@core/store/storages/chat/chat.store.types.ts";
-import { createTransferMessage } from "../functions";
-import { ChatDataType } from "../types";
+} from '@core/store/storages/chat/chat.store.types.ts';
+import { useStoreActions } from '@core/store/store.ts';
+import { createTransferMessage } from '../functions';
+import { ChatDataType } from '../types';
 
 export const useChatEmitter = (
   currentUserId: string,
   topicId: string | null,
-  requestId: string | number
 ) => {
-  const { sentrySendCustomEvent } = useSentry();
   const {
     chats: { addDummyMessage, updateSendMessage },
   } = useStoreActions((state) => state);
   const onMessageHandler = async (
-    event: EventMessage,
-    transferData: (d: { [p: string]: unknown }) => Promise<null | undefined>
+    event: { isTrusted: boolean; data: string },
+    transferData: (d: { [p: string]: unknown }) => Promise<null | undefined>,
   ) => {
+    console.log(event, 'EVENT');
     try {
-      const body: ChatMessageType = JSON.parse(event.data);
-      const { type, id, sender }: ChatMessageType = body;
-      switch (type) {
-        case ChatDataType.text:
-        case ChatDataType.link:
-        case ChatDataType.media:
-          const seenMsg = createTransferMessage(ChatDataType.seen, +id);
-          await transferData(seenMsg);
-          const messageUserId = sender.user.id;
+      const m: EventMessage = JSON.parse(event?.data);
+      console.log(m);
+      switch (m.type) {
+        case ChatEvents.SendMessage:
+          const newMessage: { message: ChatMessageType; sender: string; } = m.data;
+          // const seenMsg = createTransferMessage(ChatDataType.seen, +newMessage.id);
+          // await transferData(seenMsg);
+          const messageUserId = newMessage.sender;
+          console.log(messageUserId, currentUserId);
           if (!equals(messageUserId, currentUserId)) {
-            addDummyMessage(body);
+            addDummyMessage(newMessage.message);
           } else {
-            updateSendMessage(body);
+            updateSendMessage(newMessage.message);
           }
           break;
-        case ChatDataType.online:
-        case ChatDataType.offline:
-        case ChatDataType.seen:
-          break;
         default:
-          console.log("ON MESSAGE: unknown type", type);
+          console.log('ON MESSAGE: unknown type', m.type);
           break;
       }
     } catch (e) {
-      sentrySendCustomEvent(
-        SENTRY_CUSTOM_EVENTS_MESSAGES.onMessageHandlerError,
-        "error",
-        {
-          now: Date.now(),
-          topicId,
-          requestId,
-          closeEvent: close.toString(),
-        }
-      );
+      console.log('123', e);
     }
   };
 
   const onCloseHandler = async (close: Event) => {
-    sentrySendCustomEvent(
-      SENTRY_CUSTOM_EVENTS_MESSAGES.onCloseChatSocket,
-      "warning",
-      {
-        now: Date.now(),
-        topicId,
-        requestId,
-        closeEvent: close.toString(),
-      }
-    );
-    if (__DEV__) {
-      console.log("CONNECT TO SOCKET CLOSED! ", close);
-    }
+    console.log('CONNECT TO SOCKET CLOSED! ', close);
   };
 
   const onErrorHandler = async (err: Event) => {
-    sentrySendCustomEvent(
-      SENTRY_CUSTOM_EVENTS_MESSAGES.onErrorChatSocket,
-      "error",
-      {
-        now: Date.now(),
-        topicId,
-        requestId,
-        errorMsg: err?.toString(),
-      }
-    );
-    if (__DEV__) {
-      console.log("CONNECT TO SOCKET ERROR!: ", err?.toString());
-    }
+    console.log('CONNECT TO SOCKET ERROR!: ', err?.toString());
   };
 
   const onConnectHandler = async () => {
-    sentrySendCustomEvent(
-      SENTRY_CUSTOM_EVENTS_MESSAGES.onOpenChatSocket,
-      "info",
-      {
-        now: Date.now(),
-        topicId,
-        requestId,
-      }
-    );
+
   };
   return {
     onClose: onCloseHandler,

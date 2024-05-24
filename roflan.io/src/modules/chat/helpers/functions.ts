@@ -6,8 +6,8 @@ import { and, or } from 'ramda';
 import { tokensCacheStore } from '@core/caching';
 import NativeMainModule from '@tm/NativeMainModule.ts';
 import { Localization } from '@core/constants/localization.ts';
-import type {
-  ChatDateSeparatorType,
+import {
+  ChatDateSeparatorType, ChatEvents,
   ChatMessageType,
   MediaDataType,
 } from '@core/store/storages/chat/chat.store.types.ts';
@@ -20,16 +20,17 @@ import { UIMessageType } from './types';
 
 export const getMessagingURL = async (topicId: string | null) => {
   const token = await tokensCacheStore.take();
-  const messaging = NativeMainModule?.getEnv('MESSAGING_URL_WSS');
-  return `${messaging}api/messaging/${topicId}/${token.access_token}` as const;
+  const messaging = 'ws://localhost:8080/api/v2/';
+  console.log(`${messaging}messaging/${topicId}/${token.access_token}`);
+  return `${messaging}messaging/${topicId}/${token.access_token}` as const;
 };
 
 export const createTransferMessage = (
-  type: keyof ChatTypeDictionary,
+  type: ChatEvents,
   body: string | number,
 ) => ({
   type,
-  body,
+  data: { body, mediaIds: [] },
 });
 
 export const getExactTime = (date: Date) =>
@@ -46,6 +47,23 @@ export const getExactDate = (date: Date) =>
     year: '2-digit',
   });
 
+function generateRandomString(length: number) {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
+  const charactersLength = characters.length;
+
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * charactersLength);
+    result += characters[randomIndex];
+  }
+
+  return result;
+}
+
+// Example usage:
+const randomString = generateRandomString(10); // Generates a random string of length 10
+console.log(randomString);
+
 export const isToday = (date: Date) =>
   new Date().toDateString() === date.toDateString();
 
@@ -56,7 +74,7 @@ export const isYesterday = (date: Date) => {
   return yesterday.toDateString() === date.toDateString();
 };
 
-export const getTimeTextByDate = (t: (k: string) => string, time: Date) => {
+export const getTimeTextByDate = (time: Date) => {
   if (isToday(time)) {
     return `${Localization.time.today} ${getExactTime(time)}`;
   } if (isYesterday(time)) {
@@ -79,15 +97,15 @@ const stillCurrentDay = (dayOfMessage: string, currentDay: string) => {
 };
 
 const createSeparator = (date: string, idx: string): ChatDateSeparatorType => ({
-  createdAt: date,
-  id: `separator_${date.toString()}_${idx}`,
+  created_at: date,
+  id: `separator_${date?.toString()}_${idx}`,
   type: 'separator',
   uiMessageType: UIMessageType.none,
 });
 
 const isSameAuthor = (l1: ChatDataTypeUnion, l2: ChatDataTypeUnion) =>
-  (l1 as ChatMessageType).sender.user.id ===
-  (l2 as ChatMessageType).sender.user.id;
+  (l1 as ChatMessageType).user_owner.user_hash ===
+  (l2 as ChatMessageType).user_owner.user_hash;
 
 export function splitMessagesByDelimiter(
   prev: ChatDataTypeUnion[],
@@ -95,15 +113,15 @@ export function splitMessagesByDelimiter(
 ) {
   if (messages.length === 0) return prev;
   const last = messages.length;
-  let firstOfBunchDate = messages[0].createdAt;
+  let firstOfBunchDate = messages[0].created_at;
   const orderedListOfMessages: ChatDataTypeUnion[] = [];
   let currentLastMessage = messages[0];
   const firstPrev = prev[prev.length - 1];
   if (
     prev.length > 0 &&
-    stillSameMinute(currentLastMessage.createdAt, firstPrev.createdAt) &&
+    stillSameMinute(currentLastMessage.created_at, firstPrev.created_at) &&
     messages[1] &&
-    stillSameMinute(messages[1].createdAt, firstPrev.createdAt)
+    stillSameMinute(messages[1].created_at, firstPrev.created_at)
   ) {
     firstPrev.uiMessageType = UIMessageType.middle;
     currentLastMessage = firstPrev;
@@ -111,10 +129,10 @@ export function splitMessagesByDelimiter(
   }
   if (
     prev.length > 0 &&
-    !stillCurrentDay(messages[0].createdAt, prev[prev.length - 1].createdAt)
+    !stillCurrentDay(messages[0].created_at, prev[prev.length - 1].created_at)
   ) {
     orderedListOfMessages.push(
-      createSeparator(prev[prev.length - 1].createdAt, `${last}`),
+      createSeparator(prev[prev.length - 1].created_at, `${last}`),
     );
   }
   for (let i = 0; i < messages.length; i++) {
@@ -124,7 +142,7 @@ export function splitMessagesByDelimiter(
       currentMessage &&
       currentMessage.type !== 'separator' &&
       isSameAuthor(currentMessage, currentLastMessage) &&
-      stillSameMinute(currentLastMessage.createdAt, currentMessage.createdAt)
+      stillSameMinute(currentLastMessage.created_at, currentMessage.createdAt)
     ) {
       currentLastMessage.uiMessageType = UIMessageType.end;
       currentMessage.uiMessageType = UIMessageType.middle;
@@ -132,12 +150,12 @@ export function splitMessagesByDelimiter(
       if (
         or(
           (isValidNext &&
-            !stillSameMinute(currentLastMessage.createdAt, next.createdAt)) ||
+            !stillSameMinute(currentLastMessage.created_at, next.createdAt)) ||
             (isValidNext && !isSameAuthor(next, currentLastMessage)),
           !isValidNext &&
             isSameAuthor(currentMessage, currentLastMessage) &&
             stillSameMinute(
-              currentLastMessage.createdAt,
+              currentLastMessage.created_at,
               currentMessage.createdAt,
             ),
         )
@@ -147,16 +165,16 @@ export function splitMessagesByDelimiter(
     } else if (currentLastMessage.type !== 'separator') {
       currentLastMessage = messages[i];
     }
-    if (stillCurrentDay(firstOfBunchDate, messages[i].createdAt)) {
+    if (stillCurrentDay(firstOfBunchDate, messages[i].created_at)) {
       orderedListOfMessages.push(messages[i]);
     } else {
       const delimiter = createSeparator(
-        messages[i - 1].createdAt,
+        messages[i - 1].created_at,
         `${messages[i].id}${i}`,
       );
       orderedListOfMessages.push(delimiter);
       orderedListOfMessages.push(messages[i]);
-      firstOfBunchDate = messages[i].createdAt;
+      firstOfBunchDate = messages[i].created_at;
     }
   }
   return [...prev, ...orderedListOfMessages];
@@ -174,7 +192,7 @@ export function addMessageWithSeparation(
     );
     if (
       equalIds &&
-      stillSameMinute(lastMessageBefore.createdAt, message.createdAt)
+      stillSameMinute(lastMessageBefore.created_at, message.created_at)
     ) {
       if (lastMessageBefore.uiMessageType !== UIMessageType.first) {
         lastMessageBefore.uiMessageType = UIMessageType.middle;
@@ -189,11 +207,11 @@ export function addMessageWithSeparation(
   }
   if (
     lastMessageBefore &&
-    !stillCurrentDay(lastMessageBefore.createdAt, message.createdAt)
+    !stillCurrentDay(lastMessageBefore.created_at, message.created_at)
   ) {
     return [
       message,
-      createSeparator(message.createdAt, `${message.id}${listLength}`),
+      createSeparator(message.created_at, `${message.id}${listLength}`),
     ];
   }
   return [message];
@@ -205,43 +223,27 @@ export function createMessage(
   type: ChatDataType,
   medias: MediaDataType[],
   topicId: string,
-  senderId: string,
+  sender: ChatMessageType['user_owner'],
 ): ChatMessageType {
   const currentDate = new Date().toISOString();
   return {
-    sender: {
-      createdAt: currentDate,
-      id: senderId,
-      lastRead: 0,
-      status: '',
-      topicId,
-      updatedAt: currentDate,
-      user: {
-        avatar: '',
-        createdAt: currentDate,
-        email: '',
-        firstName: '',
-        id: senderId,
-        lastName: '',
-        patronymic: '',
-        phone: '',
-        position: '',
-        role: '',
-        updatedAt: '',
-      },
-      userId: senderId,
-    },
-    id: +lastMessageId + 1,
-    externalId: null,
-    type,
+    type: 's',
     body,
-    payload: null,
-    createdAt: currentDate,
-    updatedAt: currentDate,
-    topicId,
-    senderId,
+    createdAt: new Date().toString(),
+    created_at: new Date().toString(),
+    deleted_at: new Date().toString(),
+    id: lastMessageId + 1,
     isLocal: true,
-    isLastRead: true,
-    medias,
+    media: [],
+    message_id: generateRandomString(20),
+    message_status: 1,
+    topic_hash_id: topicId,
+    uiMessageType: 0,
+    updatedAt: new Date().toString(),
+    updated_at: new Date().toString(),
+    user_hash_id: sender.user_hash,
+    user_owner: sender,
+    with_media: false,
+
   };
 }

@@ -25,14 +25,14 @@ export const chatInputViewStyles = {
     placeholderTextColor: theme.colors.gray['400'],
   })`
     flex: 1;
-    max-height: 144px; // 24 * 6 lines (like in TG)
+    padding-top: 10px;
+    max-height: 144px;
     min-height: 48px;
     margin-right: 8px;
     background-color: ${theme.colors.dark['900']};
-    font-size: 14px;
-    color: ${theme.colors.white};
+    font-size: 20px;
+    color: ${theme.colors.black};
     line-height: 24px;
-    padding: 0;
     margin-bottom: 5px;
   `,
   ButtonView: styled.TouchableOpacity.attrs<TouchableOpacityProps>({

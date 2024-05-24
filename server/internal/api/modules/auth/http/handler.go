@@ -48,8 +48,8 @@ func (auth *AuthHttpHandler) RegisterHandler(context *gin.Context) {
 	isCreated := auth.CreateInitialUser(
 		helpers.HandleStringValues(body["username"], ""),
 		helpers.HandleStringValues(body["password"], ""),
-		helpers.HandleStringValues(body["firstName"], ""),
-		helpers.HandleStringValues(body["lastName"], ""),
+		helpers.HandleStringValues(body["first_name"], ""),
+		helpers.HandleStringValues(body["last_name"], ""),
 		helpers.HandleStringValues(body["patronymic"], ""),
 		int(helpers.HandleNilValues(body["role"], 0).(float64)),
 		helpers.HandleStringValues(body["phone"], ""),

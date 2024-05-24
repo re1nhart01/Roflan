@@ -1,0 +1,2 @@
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2hhc2giOiIzYjg3NDM5YzUyNjgwMTdlMDdiNzMwMjc4YmNhZmVlMWVjZGIzNWRhIiwiaWQiOjEyLCJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE2NjA5NjA1fQ.02gR6P6VUDI9qlcLJKVd57qDfCdC-Hs7tj-TcTVmDgo
+{"type": "sendMessage", "data": { "body": "Abababa", "mediaIds": [] }}

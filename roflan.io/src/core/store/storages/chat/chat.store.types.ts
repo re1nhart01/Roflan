@@ -12,7 +12,7 @@ export interface ChatsModel {
   setTopics: Action<this, this['topics']>;
   getTopics: Thunk<this>;
   getTopicByRequestId: Thunk<this, number | string>;
-  addTopic: Thunk<this, { externalId: string }>;
+  addTopic: Thunk<this, { userIds: string[], avatarBucket: string; name: string; isSingle: boolean; }>;
   // dictionaries
   topicsDictionary: { [key: string]: ChatTopicType };
   messagesCounterDictionary: { [key: string]: UnreadCounterObject };
@@ -38,13 +38,7 @@ export interface ChatsModel {
     this,
     { topicId: string; cb: (prev: number) => number }
   >;
-  rollTopic: Thunk<this, string>;
   getFirstMessageId: Thunk<this>;
-  getUnreadMessagesCounter: Thunk<this>;
-  totalUnreadMessagesCount: number;
-  setTotalUnreadMessagesCount: Action<this, UnreadCounterObject[]>;
-  unreadCounterList: UnreadCounterObject[];
-  setUnreadCounterList: Action<this, number>;
   reset: Action<this>;
 }
 
@@ -55,44 +49,43 @@ export interface BaseChatType {
 }
 
 export interface EventMessage {
-  isTrusted: boolean;
-  data: string;
+  type: ChatEvents;
+  data: any;
+}
+
+export enum ChatEvents {
+  SendMessage = 'sendMessage',
+  Connect = 'connect',
+  CloseConn = 'close',
+  Online = 'online',
+  ReadAllMessage = 'readAllMessages',
+  RemoveOneMessage = 'removeOneMessage',
+  RemoveBunchMessages = 'removeBunchMessages',
 }
 
 export interface ChatMessageType extends BaseChatType {
-  id: number;
-  externalId: string | null;
-  type: ChatDataType;
-  body: string;
-  payload: null;
-  createdAt: string;
-  updatedAt: string;
-  topicId: string;
-  senderId: string;
-  isLastRead: boolean;
-  sender: {
-    id: string;
-    status: string;
-    lastRead: number;
-    createdAt: string;
-    updatedAt: string;
-    userId: string;
-    topicId: string;
-    user: {
-      id: string;
-      firstName: string;
-      lastName: string;
-      patronymic: string;
-      position: null | string;
-      email: null | string;
-      phone: string;
-      role: string;
-      avatar: null | string;
-      createdAt: string;
-      updatedAt: string;
-    };
-  };
-  medias: Array<MediaDataType>;
+  'id': number;
+  'body': string;
+  type?: 's';
+  'created_at': string;
+  'deleted_at': string;
+  'media': MediaTypeMessage[];
+  'message_id': string;
+  'message_status': number;
+  'topic_hash_id': string;
+  'updated_at': string;
+  'user_hash_id': string;
+  'user_owner': {
+    'details': string;
+    'first_name': string;
+    'last_name': string;
+    'patronymic': string;
+    'role': number;
+    'university': string;
+    'user_hash': string;
+    'username': string;
+  },
+  'with_media': boolean;
   // for UI representation of bunch of messages which was sent in 3 minutes interval
   uiMessageType?: UIMessageType;
   isLocal?: boolean;
@@ -103,19 +96,20 @@ export type MediaDataType = {
 };
 
 export interface MediaTypeMessage {
-  uri: string;
-  id: string;
-  name: string;
-  originalName: string;
-  mimetype: string;
-  size: number;
-  createdAt: string;
-  updatedAt: string;
-  messageId: string;
+  'bucket_id': string;
+  'created_at': string;
+  'deleted_at': string;
+  'file_name': string;
+  'from_file_id': string;
+  'from_message_id': string;
+  'id': number;
+  'owner_user_hash': string;
+  'updated_at': string;
+  'user_hash_id': string;
 }
 
 export interface ChatDateSeparatorType {
-  createdAt: string;
+  created_at: string;
   id: string;
   type: 'separator';
   uiMessageType: UIMessageType;
@@ -145,11 +139,63 @@ export interface ChatUserType extends BaseChatType {
   avatar: string; // len 1275;
 }
 
+export interface ChatTopicUserType {
+  'birthday': string,
+  'city': string,
+  'country': string,
+  'created_at': string,
+  'deleted_at': string,
+  'details': string,
+  'first_name': string,
+  'id': number,
+  'last_name': string,
+  'patronymic': string,
+  'phone': string,
+  'role': number,
+  'topic_hash_id': string,
+  'university': string,
+  'updated_at': string,
+  'user_hash': string,
+  'user_hash_id': string,
+  'username': string
+}
 export interface ChatTopicType extends BaseChatType {
-  externalId: string | number;
-  picture?: string; // len 2048
-  name: string;
-  topicId: string;
+  'active': boolean,
+  'avatar_bucket': string,
+  'created_at': string,
+  'deleted_at': string,
+  'id': number,
+  'is_single': boolean,
+  'name': string,
+  'topic_hash': string,
+  'topic_hash_id': string,
+  'updated_at': string,
+  'user_hash_id': string,
+  'users': ChatTopicUserType[]
+  'lastMessage': {
+    'birthday': string;
+    'body': string,
+    'city': string;
+    'country': null;
+    'created_at': string;
+    'deleted_at': string;
+    'details': string | null;
+    'first_name': string;
+    'id': number;
+    'last_name':string;
+    'message_id': string;
+    'message_status': number,
+    'patronymic': null,
+    'phone': null,
+    'role': number;
+    'topic_hash_id': string;
+    'university': string;
+    'updated_at': string;
+    'user_hash': null,
+    'user_hash_id': string;
+    'username': string;
+    'with_media': boolean;
+  };
 }
 
 export interface MessagingAPIPagingType<T extends object> {

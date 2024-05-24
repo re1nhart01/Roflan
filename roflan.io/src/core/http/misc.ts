@@ -5,7 +5,8 @@ import { isNil } from 'ramda';
 import { handleApplicationLogout } from '@core/store/helpers/functions.ts';
 
 export enum Modules {
-    auth = '/auth'
+    auth = '/auth',
+    user = '/users',
 }
 
 export class Misc {

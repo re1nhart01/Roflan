@@ -58,6 +58,25 @@ func (repo *TopicsRepository) GetBulkTopics(userHash string, queries map[string]
 		return result, errors.New("paginator error 1")
 	}
 
+	if err := paginator.MergeTo[map[string]any](&result, "lastMessage", func(item map[string]any, tx *gorm.DB) *gorm.DB {
+		return tx.Table(models.MessagesTable).Where("topic_hash_id = ?", item["topic_hash"]).
+			Joins(`left join (select 
+						user_hash, 
+						first_name,
+						last_name,	
+						patronymic,	
+						username,
+						role,
+						university,
+						city,
+						country,
+						details,
+						birthday,
+						phone from users) as u on u.user_hash = messages.topic_hash_id`).Order("created_at desc")
+	}); err != nil {
+		return result, errors.New("paginator error 2")
+	}
+
 	return result, nil
 }
 

@@ -16,7 +16,7 @@ export const EmptyScreenStyles = {
   Text: styled.Text`
     font-size: 16px;
     font-weight: 400;
-    color: ${theme.colors.black}
+    color: ${theme.colors.black};
     margin-top: 28px;
     text-align: center;
     line-height: 26px;

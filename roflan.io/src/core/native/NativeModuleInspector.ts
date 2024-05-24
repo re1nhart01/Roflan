@@ -25,7 +25,7 @@ export class NativeModuleInspector<
   constructor(name: keyof typeof NativeModulesNames) {
     this._name = name;
     this._selector = native[name];
-    if (isNil(native[name]) && __DEV__) {
+    if (isNil(native[name])) {
       console.log(
         'NativeModuleInspector Error! This Module is not exists on this platform!',
       );

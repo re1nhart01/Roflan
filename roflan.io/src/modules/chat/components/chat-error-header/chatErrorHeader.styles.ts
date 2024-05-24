@@ -16,7 +16,7 @@ export const chatErrorHeaderStyles = {
   ErrorMessage: styled.Text`
     font-size: 8px;
     font-weight: 300;
-    color: ${theme.colors.primary['300']}
+    color: ${theme.colors.primary['300']};
     margin-left: 20px;
     text-align: center;
     line-height: 28px;

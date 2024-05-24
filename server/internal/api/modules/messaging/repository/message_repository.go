@@ -91,7 +91,11 @@ func (repo *MessageRepository) AddMessage(userHash, topicHash, body string, medi
 	}
 
 	echoModel := models.MessageModelFull{
-		BaseModel:     nil,
+		BaseModel: &models.BaseModel{
+			CreatedAt: time.Now(),
+			UpdatedAt: time.Now(),
+			DeletedAt: time.Now(),
+		},
 		UserHashId:    userHash,
 		TopicHashId:   topicHash,
 		Body:          body,

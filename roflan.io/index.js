@@ -1,4 +1,4 @@
-import {AppRegistry, LogBox, Pressable, TouchableOpacity, View} from 'react-native';
+import { AppRegistry, LogBox, Pressable, TouchableOpacity, View } from 'react-native';
 import React, { useEffect } from 'react';
 import { StoreProvider } from 'easy-peasy';
 import { store } from '@core/store/store';
@@ -24,6 +24,7 @@ TouchableOpacity.defaultProps = {
 
 LogBox.ignoreLogs(['In React 18, SSRProvider is not necessary and is a noop. You can remove it from your app.',
   'All focusable views should report proper accessibility information.',
+  'Failed prop type: Invalid props.style key `initial` supplied to `Text`',
 ]);
 
 const AppWithContainerStore = () => {

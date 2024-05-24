@@ -205,3 +205,10 @@ func WrapToBytes(value any) []byte {
 	}
 	return data
 }
+
+func Capitalize(s string) string {
+	if s == "" {
+		return s
+	}
+	return strings.ToUpper(string(s[0])) + strings.ToLower(s[1:])
+}

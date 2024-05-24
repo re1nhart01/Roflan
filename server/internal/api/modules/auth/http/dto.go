@@ -17,14 +17,14 @@ var AuthRegisterDto = &dto.FieldsMapping{
 		Max:      100,
 		Name:     "password",
 	},
-	"firstName": &dto.FieldDto{
+	"first_name": &dto.FieldDto{
 		Type:     "STRING",
 		Required: true,
 		Min:      5,
 		Max:      100,
 		Name:     "firstName",
 	},
-	"lastName": &dto.FieldDto{
+	"last_name": &dto.FieldDto{
 		Type:     "STRING",
 		Required: true,
 		Min:      5,

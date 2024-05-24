@@ -11,6 +11,7 @@ import (
 type IUserRepo interface {
 	ReadUserData(userHash string) (map[string]any, error)
 	GetPaginatedUserList(queries map[string][]string) (paginator.ObjectPaginator, error)
+	UpdateAndTransformField(userHash string, fields map[string]any) (map[string]any, error)
 }
 
 type UserHttpHandler struct {
@@ -49,19 +50,30 @@ func (user *UserHttpHandler) GetMyProfile(context *gin.Context) {
 
 	userData, err := user.ReadUserData(userHash)
 	if err != nil {
+		fmt.Println(err.Error())
 		context.JSON(helpers.GiveBadRequest(err.Error(), nil))
-		return
+	} else {
+		context.JSON(helpers.GiveOkResponseWithData(userData))
 	}
-
-	context.JSON(helpers.GiveOkResponseWithData(userData))
 }
 
 func (user *UserHttpHandler) UpdatePreferences(context *gin.Context) {
-
+	context.JSON(helpers.GiveBadRequest("NOT IMPLEMENTED!", nil))
 }
 
 func (user *UserHttpHandler) UpdateUserFields(context *gin.Context) {
-
+	userD, stopped := user.UnwrapUserData(context)
+	request, stopped := user.Unwrap(context, UpdateUserFieldDto)
+	if stopped {
+		return
+	}
+	userHash := userD["userHash"].(string)
+	if result, err := user.UpdateAndTransformField(userHash, request); err != nil {
+		fmt.Println(err)
+		context.JSON(helpers.GiveBadRequest(err.Error(), nil))
+	} else {
+		context.JSON(helpers.GiveOkResponseWithData(result))
+	}
 }
 
 func (user *UserHttpHandler) AliveHandler(context *gin.Context) {

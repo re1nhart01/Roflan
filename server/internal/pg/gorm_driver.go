@@ -26,7 +26,7 @@ func InitializeTables(wg *sync.WaitGroup, models IModels) {
 	instance := GDB()
 
 	instance.CallManualSQL(models.NewRolesTable())
-	instance.CallManualSQL("insert into public.roles (key, value_representation) values ('test', 'test');")
+	instance.CallManualSQL("insert into public.roles (key, value_representation) values ('graduate', 'graduate'), ('student', 'student');")
 	instance.CallManualSQL(models.NewUsersTable())
 	instance.CallManualSQL(models.NewTelegramIdsTable())
 	instance.CallManualSQL(models.NewUserPreferencesTable())

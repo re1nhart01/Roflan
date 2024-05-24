@@ -30,13 +30,13 @@ export const requester = async <P, T = unknown>(
   const { refresh_token, access_token } = await tokensCacheStore.take();
   try {
     return await axios({
-      url: `${NativeCppModule?.getEnv('API_URL')}${url}`,
+      url: `http://192.168.1.184:8080/api/v2${url}`,
       method,
       data,
       baseURL,
       headers: {
         ...(isNil(headers) ? {} : headers),
-        Authorization: `Bearer ${access_token}`,
+        Authorization: `spider$${access_token}`,
       },
     });
   } catch (err) {
@@ -62,7 +62,7 @@ export const requester = async <P, T = unknown>(
             await sleep(1000);
 
             return axios({
-              url,
+              url: `http://192.168.1.184:8080/api/v2${url}`,
               method,
               data,
               baseURL,
@@ -97,7 +97,7 @@ export const requester = async <P, T = unknown>(
 async function requestNewTokens(refresh_token: string | null) {
   if (refreshTokenRequest.promise === null) {
     refreshTokenRequest.promise = axios.patch<RefreshTokenResponse>(
-      `${Modules.auth}/refresh`,
+      `http://192.168.1.184:8080/api/v2${Modules.auth}/refresh`,
       { refresh_token },
     );
   }

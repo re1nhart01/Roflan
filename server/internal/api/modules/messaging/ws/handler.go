@@ -142,10 +142,10 @@ func (wsms *MessagingEmitterHandler) SendMessageEvent(client *socket2.SocketClie
 
 	sockMessage := &socket2.SocketMessage{
 		MessageType: 1,
-		Message: helpers.WrapToBytes(map[string]any{
+		Message: helpers.WrapToBytes(helpers.GiveSocketMessage(SendMessage, map[string]any{
 			"message": newMessage,
 			"sender":  client.UserHash,
-		}),
+		})),
 	}
 
 	if err := wsms.Hub.BroadcastTo(sockMessage, clients, client.UserHash, true); err != nil {

@@ -29,12 +29,12 @@ export const SignUpScreen: FC = () => {
               phone: '',
               password: '',
               username: '',
-              firstName: '',
-              lastName: '',
+              first_name: '',
+              last_name: '',
               patronymic: '',
               sex: '',
               description: '',
-              role: '' }}
+              role: 1 }}
           >
             {
             ({
@@ -45,8 +45,8 @@ export const SignUpScreen: FC = () => {
                 phone,
                 password,
                 username,
-                firstName,
-                lastName,
+                first_name,
+                last_name,
                 patronymic,
                 sex,
                 description,
@@ -86,9 +86,10 @@ export const SignUpScreen: FC = () => {
                       selectedValue={values.role}
                       onValueChange={(itemValue) => updateFormState('role', itemValue)}
                     >
-                      <Picker.Item label="Graduate" value="graduate" />
-                      <Picker.Item label="Student" value="student" />
+                      <Picker.Item label="Graduate" value={1} />
+                      <Picker.Item label="Student" value={2} />
                     </Picker>
+                    <ErrorMessage errorMessage={role.errorMessage} hideIfTextEmpty />
                   </Box>
                   <Box maxW="750px" pb="12">
                     <Picker
@@ -99,6 +100,7 @@ export const SignUpScreen: FC = () => {
                       <Picker.Item label="Female" value="female" />
                       <Picker.Item label="Other" value="other" />
                     </Picker>
+                    <ErrorMessage errorMessage={sex.errorMessage} hideIfTextEmpty />
                   </Box>
                   <Box maxW="750px" pb="12">
                     <AnimatedInput
@@ -112,20 +114,20 @@ export const SignUpScreen: FC = () => {
                   <Box maxW="750px" pb="12">
                     <AnimatedInput
                       maxLength={100}
-                      value={values.firstName}
+                      value={values.first_name}
                       placeholder={Localization.placeholders.firstName}
-                      setText={(v) => updateFormState('firstName', v)}
+                      setText={(v) => updateFormState('first_name', v)}
                     />
-                    <ErrorMessage errorMessage={firstName.errorMessage} hideIfTextEmpty />
+                    <ErrorMessage errorMessage={first_name.errorMessage} hideIfTextEmpty />
                   </Box>
                   <Box maxW="750px" pb="12">
                     <AnimatedInput
                       maxLength={100}
-                      value={values.lastName}
+                      value={values.last_name}
                       placeholder={Localization.placeholders.lastName}
-                      setText={(v) => updateFormState('lastName', v)}
+                      setText={(v) => updateFormState('last_name', v)}
                     />
-                    <ErrorMessage errorMessage={lastName.errorMessage} hideIfTextEmpty />
+                    <ErrorMessage errorMessage={last_name.errorMessage} hideIfTextEmpty />
                   </Box>
                   <Box maxW="750px" pb="12">
                     <AnimatedInput

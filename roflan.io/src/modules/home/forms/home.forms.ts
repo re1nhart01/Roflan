@@ -26,7 +26,7 @@ export const userNameForm = new FormadjoFormer<{ first_name: string; last_name: 
     .setMaxLength(10),
 });
 
-export const userEducationForm = new FormadjoFormer<{ university: string; role: string; }>({
+export const userEducationForm = new FormadjoFormer<{ university: string; role: number; }>({
   university: new FormadjoField('university', 'string')
     .setIsRequired(false)
     .setMinLength(2)

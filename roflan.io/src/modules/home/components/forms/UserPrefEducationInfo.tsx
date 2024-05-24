@@ -64,7 +64,7 @@ export const UserPrefEducationInfo: FC<userPrefBasicInfoProps> = ({ university, 
                   <Box maxW="750px" pb="8">
                     <Picker
                       selectedValue={values.role}
-                      onValueChange={(itemValue) => updateFormState('role', itemValue)}
+                      onValueChange={(itemValue) => updateFormState('role', +itemValue)}
                     >
                       <Picker.Item label="Graduate" value={1} />
                       <Picker.Item label="Student" value={2} />

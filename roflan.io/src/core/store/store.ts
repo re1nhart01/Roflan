@@ -28,7 +28,7 @@ export const store = createStore<StoreModel>(
         await AsyncStorage.removeItem(STORE_KEY);
       },
     },
-    allow: [],
+    allow: ['app', 'auth'],
   }),
   {},
 );

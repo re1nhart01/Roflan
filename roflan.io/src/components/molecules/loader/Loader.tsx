@@ -4,10 +4,12 @@ import { Center } from 'native-base';
 import { videos } from '@core/constants/assets.ts';
 import { useStoreState } from '@core/store/store.ts';
 import { LoaderStyle } from '@components/molecules/loader/loader.style.ts';
+import { useStoreRehydrated } from 'easy-peasy';
 
 const { Wrapper, LoaderGif } = LoaderStyle;
 
 export const Loader = () => {
+  const isStoreRehydrated = useStoreRehydrated();
   const val = useRef(new Animated.Value(1)).current;
   const {
     app: { isLoad },
@@ -24,7 +26,8 @@ export const Loader = () => {
     }
   }, [isLoad]);
 
-  if (!isLoad) return null;
+
+  if (isStoreRehydrated && !isLoad) return null;
 
   return (
     <Wrapper style={[{ opacity: val }]}>

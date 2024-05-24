@@ -8,6 +8,11 @@ import { UserPrefLocationInfo } from '@src/modules/home/components/forms/UserPre
 import { UserPrefEducationInfo } from '@src/modules/home/components/forms/UserPrefEducationInfo.tsx';
 import { useUserProfileState } from '@src/modules/home/screens/user-profile-screen/userProfile.state.ts';
 import { defaultTo } from 'ramda';
+import {
+  IUserEducationPrefTemplate,
+  IUserLocationPrefTemplate,
+  IUserNamePrefTemplate,
+} from '@src/modules/home/forms/home.forms.type.ts';
 
 const { ButtonStyle, Wrapper } = userProfileScreenStyle;
 
@@ -39,9 +44,24 @@ export const UserProfileScreen: FC = () => {
               <Image tintColor="rgba(255,255,255,0.5)" maxW="150px" maxH="150px" resizeMode="cover" source={require('@assets/png/use.png')} alt="use.png" />
             </Box>
             <UserPrefBasicInfo phone={phone} user_hash={user_hash} username={username} />
-            <UserPrefNameInfo last_name={lastName} first_name={firstName} details={details} sex={sex} patronymic={patronymic} onSubmission={updateUserField} />
-            <UserPrefLocationInfo city={city} country={country} onSubmission={updateUserField} />
-            <UserPrefEducationInfo onSubmission={updateUserField} role={role} university={university} />
+            <UserPrefNameInfo
+              last_name={lastName}
+              first_name={firstName}
+              details={details}
+              sex={sex}
+              patronymic={patronymic}
+              onSubmission={updateUserField as unknown as (values: IUserNamePrefTemplate) => void}
+            />
+            <UserPrefLocationInfo
+              city={city}
+              country={country}
+              onSubmission={updateUserField as unknown as (values: IUserLocationPrefTemplate) => void}
+            />
+            <UserPrefEducationInfo
+              onSubmission={updateUserField as unknown as (values: IUserEducationPrefTemplate) => void}
+              role={role}
+              university={university}
+            />
           </Box>
         </ScrollView>
       </Box>

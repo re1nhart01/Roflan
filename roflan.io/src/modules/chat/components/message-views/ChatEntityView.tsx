@@ -29,7 +29,7 @@ const ChatEntityView = ({ data, index, myUserId }: chatEntityViewProps) => {
             <TextMessageView
               myUserId={myUserId}
               index={index}
-              messageData={props}
+              messageData={props as ChatMessageType}
             />
           );
       }

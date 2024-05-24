@@ -1,9 +1,9 @@
-import type { FC } from "react";
-import React from "react";
-import { Text } from "react-native";
+import type { FC } from 'react';
+import React from 'react';
+import { Text } from 'react-native';
 
-import { useChatAttachmentsState } from "./chatAttachments.state";
-import { chatAttachmentsStyles } from "./chatAttachments.styles";
+import { useChatAttachmentsState } from './chatAttachments.state';
+import { chatAttachmentsStyles } from './chatAttachments.styles';
 
 const { Wrapper } = chatAttachmentsStyles;
 

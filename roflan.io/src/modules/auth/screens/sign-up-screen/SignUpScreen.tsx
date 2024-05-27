@@ -84,7 +84,7 @@ export const SignUpScreen: FC = () => {
                   <Box maxW="750px" pb="12">
                     <Picker
                       selectedValue={values.role}
-                      onValueChange={(itemValue) => updateFormState('role', itemValue)}
+                      onValueChange={(itemValue) => updateFormState('role', +itemValue)}
                     >
                       <Picker.Item label="Graduate" value={1} />
                       <Picker.Item label="Student" value={2} />

@@ -12,6 +12,11 @@ import { createMessage, createTransferMessage, getMessagingURL } from '@src/modu
 import { useWebsocket } from '@core/hooks/useWebsocket.ts';
 import { tokensCacheStore } from '@core/caching';
 import { ChatEvents, ChatMessageType } from '@core/store/storages/chat/chat.store.types.ts';
+import { MAX_PHONE_LENGTH, phoneTemplate } from '@components/molecules/phone-input/PhoneInput.tsx';
+import Clipboard from '@react-native-clipboard/clipboard';
+import NativeMainModule from '@tm/NativeMainModule.ts';
+import { Localization } from '@core/constants/localization.ts';
+import { useThrottle } from '@core/hooks/useThrottle.ts';
 
 export const useChatDMState = () => {
   const {
@@ -39,6 +44,7 @@ export const useChatDMState = () => {
   const chatButtonRef = useRef<chatScrollButtonForwardProps>(null);
   const isInitialLoad = useRef<boolean>(true);
   const userNotMe = topicsDictionary[topicId].users.find((el) => el.user_hash !== myUserId);
+  const { isThrottle, manageThrottle } = useThrottle();
   const chatName = topicsDictionary[topicId].is_single ? `${userNotMe?.first_name} ${userNotMe?.patronymic} ${userNotMe?.last_name}` : topicsDictionary[topicId].name;
 
   const { onMessage, ...emitter } = useChatEmitter(myUserId, topicId);
@@ -116,7 +122,7 @@ export const useChatDMState = () => {
             ));
       }
     } catch (e) {
-   } finally {
+    } finally {
       InteractionManager.runAfterInteractions(() => {
         setIsLoad(false);
       });
@@ -124,6 +130,15 @@ export const useChatDMState = () => {
       await Promise.allSettled([getTopics()]);
     }
   }, [connect, getFirstMessageId, getMessageList, getTopics, setIsLoad, topicId, transferData]);
+
+  const handleCopyText = useCallback(async () => {
+    if (isThrottle.current) {
+      return;
+    }
+    manageThrottle(3000);
+    Clipboard.setString(`${topicId}`);
+    await NativeMainModule.showToastNotification('Roflan', Localization.info.copied);
+  }, [isThrottle, manageThrottle]);
 
   const onScrollTopReached = useCallback(async () => {
     const currPage = currentPage.current;
@@ -169,6 +184,7 @@ export const useChatDMState = () => {
     chatName,
     isLoading,
     setIsLoading,
+    handleCopyText,
     currentPage,
     onScrollTopReached,
     scrollListRef,

@@ -18,6 +18,6 @@ func RegisterHttpMessageRouter(engine *gin.Engine, basePath string) {
 }
 
 func RegisterWSMessagingRouter(engine *gin.Engine, basePath string) {
-	handler := ws.NewMessagingHandler(basePath, repository.NewMessageRepository())
+	handler := ws.NewMessagingHandler(basePath, repository.NewMessageRepository(), repository.NewTopicsRepository())
 	ws.MessagingWSRouter(engine, handler)
 }

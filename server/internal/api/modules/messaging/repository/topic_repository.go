@@ -150,6 +150,15 @@ func (repo *TopicsRepository) CheckIsTopicExists(hash string) bool {
 	return *result == 1
 }
 
+func (repo *TopicsRepository) CheckIsTopicUserExists(hash, userHash string) bool {
+	result := new(int64)
+
+	if payload := pg.GDB().Instance.Table(models.TopicUsersTable).Where("topic_hash_id = ? AND user_hash_id = ?", hash, userHash).Count(result); payload.Error != nil {
+		return false
+	}
+	return *result == 1
+}
+
 func NewTopicsRepository() *TopicsRepository {
 	return &TopicsRepository{
 		Repository: &base.Repository{TableName: "topics"},

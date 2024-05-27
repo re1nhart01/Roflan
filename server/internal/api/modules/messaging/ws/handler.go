@@ -31,9 +31,15 @@ type IMessagingRepo interface {
 	GetLastMessage(topicHashId string) (*models.MessageModelFull, error)
 }
 
+type ITopicsRepo interface {
+	CheckIsTopicUserExists(hash, userHash string) bool
+	CheckIsTopicExists(hash string) bool
+}
+
 type MessagingWSHandler struct {
 	*base.Handler
 	IMessagingRepo
+	ITopicsRepo
 }
 
 type MessagingEmitterHandler struct {
@@ -63,15 +69,26 @@ func (messaging *MessagingWSHandler) ConnectToSocketHandler(context *gin.Context
 	defer socket.Close()
 
 	if err != nil || topicId == "" || userToken == "" {
-		closeHandler(1487, "no topicId or UserToken")
+		closeHandler(1460, "no topicId or UserToken")
 		return
 	}
 
 	claims, err := jwt.VerifyToken(strings.TrimSpace(userToken))
 	if err != nil {
-		closeHandler(1488, "verification error")
+		closeHandler(1461, "verification error")
 		return
 	}
+
+	if !messaging.CheckIsTopicExists(topicId) {
+		closeHandler(1462, "verification error")
+		return
+	}
+
+	if !messaging.CheckIsTopicUserExists(topicId, claims.UserHash) {
+		closeHandler(1463, "verification error")
+		return
+	}
+
 	hub := socket2.GetHub()
 	emitter := NewEmitter()
 
@@ -204,12 +221,13 @@ func NewMessagingEmitterHandler(hub *socket2.Hub, repo IMessagingRepo) *Messagin
 	}
 }
 
-func NewMessagingHandler(basePath string, repo IMessagingRepo) *MessagingWSHandler {
+func NewMessagingHandler(basePath string, repo IMessagingRepo, topicRepo ITopicsRepo) *MessagingWSHandler {
 	return &MessagingWSHandler{
 		&base.Handler{
 			Name: MESSAGING_ROUTER,
 			Path: fmt.Sprintf("/%s/messaging", basePath),
 		},
 		repo,
+		topicRepo,
 	}
 }
